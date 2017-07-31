@@ -25,3 +25,4 @@ Shelffaux will enable users to
 
 - [ ] Use Amazon and/or GoodReads Api to pull Cover Photo's
 - [ ] Add User Defined sorting options
+- [ ] Auto pull a user's GoodReads or Amazon bookshelves
