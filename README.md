@@ -17,9 +17,26 @@ Shelffaux will enable users to
 
 ### Wireframes
 
-
 ![wireframes](Shelffaux_animation.png)
-![wireframes](shlefaux.png.png)
+![wireframes](shlefaux.png)
+
+### Architecture and Technologies
+
+This project will be implemented with the following technologies:
+
+- Vanilla JavaScript
+- `Easel.js`
+
+### Timeline
+
+**Day 1**: Setup basic structure including base html and script skeletons
+
+**Day 2**: Use Easel to render books and work on animation
+
+**Day 3**: Work on user addition of photos, and pulling cover images through api's
+
+**Day 4**: Polish
+
 
 ### Bonus features
 
