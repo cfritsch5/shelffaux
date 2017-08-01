@@ -8,12 +8,14 @@ There are several library and book review and management sites, GoodReads being 
 
 ### MVP  
 
-Shelffaux will enable users to
+Shelffaux will
 
-- [ ] Visually recreate a home library
-- [ ] Browse through books on the shelf the same way one would physically. Books are displayed by spine, not frontcover, and as a user browses over them (mousing over, or swiping on touch screen) books are animated to allow the user to peak at the front and back covers.
-- [ ] Optionally use their own photos for their books
-- [ ] Sorting Algorithms to display books in different orders depending on user preference
+- [ ] Visually recreate an interactive bookshelf
+- [ ] Browse through books on the shelf the same way one would physically.
+ Books are displayed by spine, not front cover, and as a user browses over
+  them (mousing over, or swiping on touch screen) books are animated to allow
+   the user to peak at the front and back covers.
+- [ ] Sorting Algorithms to display books in different orders
 
 ### Wireframes
 
@@ -24,22 +26,18 @@ Shelffaux will enable users to
 
 This project will be implemented with the following technologies:
 
-- Vanilla JavaScript
-- `Easel.js`
+- Vanilla JavaScript & HTML canvas
 
 ### Timeline
 
 **Day 1**: Setup basic structure including base html and script skeletons
-
-**Day 2**: Use Easel to render books and work on animation
-
-**Day 3**: Work on user addition of photos, and pulling cover images through api's
-
-**Day 4**: Polish
+**Day 2**:
+**Day 3**:
+**Day 4**:
 
 
 ### Bonus features
 
 - [ ] Use Amazon and/or GoodReads Api to pull Cover Photo's
-- [ ] Add User Defined sorting options
+- [ ] Add User interface for others to make their own shelves
 - [ ] Auto pull a user's GoodReads or Amazon bookshelves
