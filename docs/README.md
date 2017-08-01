@@ -35,13 +35,16 @@ This project will be implemented with the following technologies:
   - book.js : represent book object - has default size and display properties that are modified as by how bookshelf calls it
   - util : responsible for sorting algorithms and comparator callbacks
   - index.html : calls script and has canvas tag that bookshelf will be rendered into
-**Day 2**: build book object & bookshelf that arranges books in default order
+
+**Day 2** build book object & bookshelf that arranges books in default order
   - bookshelf will be able to call and display blank book objects
+
 **Day 3**: finish responsive design & start sorting
   - books will be able to move and respond to the mouse
+
 **Day 4**: complete sorting and polish css
   - bookshelf will be able to call sort on books & display in different orders
-  - page css will be polished and all links will work 
+  - page css will be polished and all links will work
 
 
 ### Bonus features
