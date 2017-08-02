@@ -1,0 +1,27 @@
+{
+  "name": "shelffaux",
+  "version": "1.0.0",
+  "description": "",
+  "main": "book.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cfritsch5/shelffaux.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cfritsch5/shelffaux/issues"
+  },
+  "homepage": "https://github.com/cfritsch5/shelffaux#readme",
+  "dependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "webpack": "^3.4.1"
+  }
+}
