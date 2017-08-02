@@ -1,6 +1,7 @@
 body {
   padding: 0;
   margin: 0;
+  background: #A9A9A9	;
 }
 canvas {
   border: 1px solid black;
