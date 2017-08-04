@@ -44,19 +44,38 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
     function titlebubble(){
       bubbleBooks("title");
+      setButtonDisabled("title-sort");
+      setButtonDisabled("author-sort");
     }
     function authorbubble(){
       bubbleBooks("author");
+      setButtonDisabled("author-sort");
+      setButtonDisabled("title-sort");
     }
 
     document.getElementById("title-sort").onclick = titlebubble;
     document.getElementById("author-sort").onclick = authorbubble;
+
+    function setButtonDisabled(btnClass){
+      console.log("disable", btnClass);
+      let btn = document.getElementById(btnClass);
+      btn.className = "disabled";
+      btn.disabled = true;
+    }
+
+    function enableButton(btnClass){
+      console.log("endable",btnClass);
+      let btn = document.getElementById(btnClass);
+      btn.className = "enabled";
+      btn.disabled = false;
+    }
 
     canvas.addEventListener('mousemove',browse,false);
     const start = setInterval(()=>(draw(0,0)),10);
     setTimeout(()=>clearInterval(start),1000);
 
     const bubbleBooks = function (prop){
+      console.log("sorting");
       document.createElement("h1").innerHTML = "SoRting";
       const go = setInterval( ()=>{
         let callCompar;
@@ -92,6 +111,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
         if(sorted === true){
           clearInterval(go);
+          if(prop == "author"){
+            enableButton("title-sort");
+          } else {
+            enableButton("author-sort");
+          }
         }
       },1000);
     };

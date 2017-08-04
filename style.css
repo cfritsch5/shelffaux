@@ -84,37 +84,39 @@ justify-content: center;
   height: 80px;
   text-align: center;
   margin-top: 20px;
-  /*border: 1px outset grey ;*/
+  border: 1px outset grey ;
   /*box-shadow: 3px 3px 5px #888888;*/
 }
+
+.options .disabled {
+  background-image: url();
+  /*background-color: linear-gradient(to bottom, #4a4a4a, #c4c4c4);*/
+  background-color:  #8c8c8c
+}
+.options .disabled:hover {
+  background-image: url();
+  background-color: #8c8c8c
+}
 .options button  {
-  background: #d6d6d6;
-  background-image: -webkit-linear-gradient(top, #d6d6d6, #5e5e5e);
-  background-image: -moz-linear-gradient(top, #d6d6d6, #5e5e5e);
-  background-image: -ms-linear-gradient(top, #d6d6d6, #5e5e5e);
-  background-image: -o-linear-gradient(top, #d6d6d6, #5e5e5e);
-  background-image: linear-gradient(to bottom, #d6d6d6, #5e5e5e);
-  -webkit-border-radius: 60;
-  -moz-border-radius: 60;
+  background: #636363;
   border-radius: 60px;
   color: #000000;
   font-size: 20px;
   padding: 10px 20px 10px 20px;
   text-decoration: none;
+  border: none;
 }
 
 .options button:hover {
-  background: #c4c4c4;
-  background-image: -webkit-linear-gradient(top, #c4c4c4, #4a4a4a);
-  background-image: -moz-linear-gradient(top, #c4c4c4, #4a4a4a);
-  background-image: -ms-linear-gradient(top, #c4c4c4, #4a4a4a);
-  background-image: -o-linear-gradient(top, #c4c4c4, #4a4a4a);
-  background-image: linear-gradient(to bottom, #c4c4c4, #4a4a4a);
-  text-decoration: none;
+  background: #6b6b6b
 }
 
 button:focus {
   outline: none;
+}
+
+.disabled {
+  /*background: blue !important;*/
 }
 
 .content {
