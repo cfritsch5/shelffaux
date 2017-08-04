@@ -5,17 +5,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
   var canvas = document.getElementById('shelf');
   var ctx = canvas.getContext('2d');
   var books = addBooks();
-
+  var bookWidth = 50;
     function draw(x, y) {
       x -= canvas.getBoundingClientRect().left;
-      ctx.clearRect(x-100, 0, x+100, canvas.height);
+      let bound = bookWidth * 2;
+      ctx.clearRect(x-bound, 0, x+bound, canvas.height);
 
-      let book, position = 50;
+      let book, position = bookWidth;
       for(let i = 0 ; i < books.length; i++ ) {
-        // books[i] = books[i] || {cover: "", spine: ""};
-        // book = new Book(books[i].cover, books[i].spine, position, position + 50);
         books[i].leftBorder = position;
-        position += 50;
+        position +=  bookWidth;
         books[i].rightBorder = position;
         book = books[i];
         book.draw(ctx, x, y);
