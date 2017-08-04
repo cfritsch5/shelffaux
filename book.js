@@ -1,14 +1,12 @@
 class Book {
-  constructor(CoverImage, SpineImage, leftBorder, rightBorder, topSpace, width, height, author, title){
+  constructor(CoverImage, SpineImage, leftBorder, rightBorder, author, title){
     this.CoverImage = CoverImage;
     this.SpineImage = SpineImage;
     this.leftBorder = leftBorder;
-    // this.rightBorder = leftBorder + height ;
     this.rightBorder = rightBorder;
-    this.mid = (leftBorder + rightBorder)/2;
-    this.topSpace = topSpace || 10;
-    this.width = width || 50;
-    this.height = height || 325;
+    this.author = author;
+    this.title = title;
+    this.topSpace = 10;
 
     this.draw = this.draw.bind(this);
     this.drawCover = this.drawCover.bind(this);
