@@ -15,10 +15,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // books[i] = books[i] || {cover: "", spine: ""};
         // book = new Book(books[i].cover, books[i].spine, position, position + 50);
         books[i].leftBorder = position;
-        books[i].rightBorder = position + 50;
+        position += 50;
+        books[i].rightBorder = position;
         book = books[i];
         book.draw(ctx, x, y);
-        position += 50;
       }
     }
 
