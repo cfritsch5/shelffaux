@@ -23,6 +23,11 @@ h1 {
   font-size: 60px;
   color: grey;
 }
+
+h1 a {
+  text-decoration: none;
+  color: grey;
+}
 header ul {
   display: flex;
   list-style-type: none;
