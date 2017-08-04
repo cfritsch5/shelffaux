@@ -71,8 +71,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     canvas.addEventListener('mousemove',browse,false);
-    const start = setInterval(()=>(draw(0,0)),10);
-    setTimeout(()=>clearInterval(start),1000);
+    const start = setInterval(()=>(draw(0,0)),100);
+    setTimeout(()=>clearInterval(start),3000);
 
     const bubbleBooks = function (prop){
       console.log("sorting");

@@ -155,10 +155,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
   canvas.addEventListener('mousemove', browse, false);
   var start = setInterval(function () {
     return draw(0, 0);
-  }, 10);
+  }, 100);
   setTimeout(function () {
     return clearInterval(start);
-  }, 1000);
+  }, 3000);
 
   var bubbleBooks = function bubbleBooks(prop) {
     console.log("sorting");
