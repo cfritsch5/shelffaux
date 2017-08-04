@@ -23,6 +23,7 @@ class Book {
     let coverWidth = this.rightBorder - A.x;
     let sample = Math.floor(img.width / coverWidth);
     swidth = sample;
+
     let deltaY = (25/coverWidth);
     for ( let i = 0 ; i < coverWidth; i++){
       sx += sample;

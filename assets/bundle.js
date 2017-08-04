@@ -259,6 +259,7 @@ var Book = function () {
       var coverWidth = this.rightBorder - A.x;
       var sample = Math.floor(img.width / coverWidth);
       swidth = sample;
+
       var deltaY = 25 / coverWidth;
       for (var i = 0; i < coverWidth; i++) {
         sx += sample;
