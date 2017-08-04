@@ -15,5 +15,3 @@
 
 # Ignore Byebug command history file.
 node_modules/
-bundle.js*
-bundle.js.map
