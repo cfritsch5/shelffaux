@@ -23,16 +23,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function addBooks(){
       let cover, spine, book = {};
       var _books = [];
-      const addcover = ()=>(book['cover']=cover);
-      const addspine = ()=>(book['spine']=spine);
+      // const addcover = ()=>(book['cover']=cover);
+      // const addspine = ()=>(book['spine']=spine);
       for(let i = 0 ; i < Books.length; i++) {
         cover = new Image();
         cover.src = Books[i].cover;
-        console.log(Books[i]);
-        cover.onload = addcover;
+        // console.log(Books[i]);
+        // cover.onload = addcover;
         spine = new Image();
         spine.src = Books[i].spine;
-        spine.onload = addspine;
+        // spine.onload = addspine;
         _books.push({cover: cover, spine: spine});
       }
       return _books;
