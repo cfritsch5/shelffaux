@@ -3,10 +3,30 @@ body {
   margin: 0;
   background: #A9A9A9	;
 }
+.main {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.canvas {
+  display: flex;
+  justify-content: center;
+  background-image: url("./images/wood_shelf3g.png");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  /*border: 3px solid red;*/
+  height: 550px;
+  /*width: 800px;*/
+}
 canvas {
-  border: 1px solid black;
+  /*border: 5px solid black;*/
   padding: 0;
-  margin: 0;
+  margin: auto;
+  /*background: black;*/
   }
+
+.shelf {
+
+}
 
 h1 {color: grey;}

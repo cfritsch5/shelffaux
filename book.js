@@ -1,7 +1,9 @@
 class Book {
-  constructor(leftBorder, rightBorder, topSpace, width, height){
-
+  constructor(CoverImage, SpineImage, leftBorder, rightBorder, topSpace, width, height, author, title){
+    this.CoverImage = CoverImage;
+    this.SpineImage = SpineImage;
     this.leftBorder = leftBorder;
+    // this.rightBorder = leftBorder + height ;
     this.rightBorder = rightBorder;
     this.mid = (leftBorder + rightBorder)/2;
     this.topSpace = topSpace || 10;
@@ -14,27 +16,35 @@ class Book {
   }
 
   drawCover(ctx, A, B, C, D){
-    ctx.fillStyle = 'rgba(50, 100, 200, 0.5)';
-    ctx.beginPath();
-    ctx.moveTo(A.x, A.y);
-    ctx.lineTo(B.x, B.y);
-    ctx.lineTo(C.x, C.y);
-    ctx.lineTo(D.x, D.y);
-    ctx.fill();
+    let img = this.CoverImage;
+    let sx = 0, sy = 0; //start cliping from (sx,sy) relative to image
+    let swidth = 10, sheight = img.height; //width and height of clipped Image
+    let x = A.x, y = A.y; // coordinates where to start drawing Image
+    let width = 2, height = 325; //display width & height aka stretch or reduce image
+
+    let coverWidth = this.rightBorder - A.x;
+    let sample = Math.floor(img.width / coverWidth);
+    swidth = sample;
+    let deltaY = (25/coverWidth);
+    for ( let i = 0 ; i < coverWidth; i++){
+      sx += sample;
+      y += deltaY;
+      height -= deltaY * 2;
+      ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
+      x += 1;
+    }
   }
 
   drawSpine(ctx, xstart, ystart, plusxWide, plusyTall){
-    ctx.fillStyle = 'rgba(0, 50, 200, 1)';
-    ctx.fillRect(xstart, ystart, plusxWide, plusyTall);
-    ctx.strokeStyle="rgba(0,0,0,1)";
-    ctx.strokeRect(xstart, ystart, plusxWide, plusyTall);
+    let img = this.SpineImage;
+    ctx.drawImage(img, xstart, ystart, 50, 325);
   }
 
   draw(ctx, x, y){
+
     let {leftBorder, rightBorder, topSpace, width, height, mid}= this;
     let xRel = x - leftBorder; //x relative to book left border
     let pointA, pointB, pointC, pointD;
-
 
     switch(true){
 
@@ -45,9 +55,7 @@ class Book {
       case (x >= leftBorder && x <rightBorder):
 
         pointA = {x: rightBorder - xRel, y: topSpace}; //topleft
-        pointB = {x: rightBorder - xRel, y: height + 10}; //bottom left
-        pointC = {x: rightBorder, y: height - 25}; // bottom right
-        pointD = {x: rightBorder, y: topSpace + 25}; // top right
+
 
         this.drawSpine(ctx, leftBorder-xRel, topSpace, width, height);
         this.drawCover(ctx, pointA, pointB, pointC, pointD);
@@ -56,9 +64,6 @@ class Book {
       case (x >= rightBorder):
 
         pointA = {x: rightBorder - (50), y: topSpace}; //topleft
-        pointB = {x: rightBorder - (50), y: height + 10}; //bottom left
-        pointC = {x: rightBorder, y: height - 25}; // bottom right
-        pointD = {x: rightBorder, y: topSpace + 25}; // top right
 
         this.drawCover(ctx, pointA, pointB, pointC, pointD);
         this.drawSpine(ctx,leftBorder-(50), topSpace, 50, 325);
