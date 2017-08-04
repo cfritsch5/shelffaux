@@ -21,6 +21,7 @@ h1 {
   padding-top: 10px;
   margin: 0;
   font-size: 60px;
+  color: grey;
 }
 header ul {
   display: flex;
@@ -48,7 +49,7 @@ nav {
   background-position: center bottom;
   /*border: 3px solid red;*/
   height: 550px;
-  /*width: 800px;*/
+  width: 110%;
 }
 canvas {
   /*border: 5px solid black;*/
@@ -58,13 +59,19 @@ canvas {
   }
 
 .options {
-  padding-left: 30%;
-  padding-right: 30%;
   display: flex;
   justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+  height: 300px;
+  width: 10%;
+  padding-top: 5%;
+  padding-bottom: 10%;
+  text-align: center;
 }
 
 .options button {
+  align-items: center;
   border-radius: 100%;
   width: 50px;
   height: 50px;
@@ -74,4 +81,7 @@ button:focus {
   outline: none;
 }
 
-h1 {color: grey;}
+.content {
+  display: flex;
+  justify-content: space-between;
+}
