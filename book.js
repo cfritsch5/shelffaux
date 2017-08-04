@@ -76,4 +76,3 @@ class Book {
 }
 
 export default Book;
-// module.exports = Book;
