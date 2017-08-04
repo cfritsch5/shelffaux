@@ -2,6 +2,7 @@
 <html>
   <head>
     <link rel="shortcut icon" href="">
+    <link href="https://fonts.googleapis.com/css?family=Archivo" rel="stylesheet">
     <meta charset="utf-8">
     <title>shelfaux</title>
     <script type="application/javascript" src="assets/bundle.js"></script>
@@ -9,14 +10,35 @@
   </head>
   <body>
     <div class="main">
-    <h1>shelffaux</h1>
-    <div class="options">
-      <h4>Bubble Sort by
-      <button id="title-sort">Title</button>
-      <button id="author-sort">Author</button>
-    </div>
+      <header>
+        <h1>shelffaux</h1>
+        <nav>
+          <ul>
+            <li>
+              <a href="https://github.com/cfritsch5/shelffaux" alt="github link">
+                <img class="logo" src="./images/github.png"/>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com/in/casey-fritsch" alt ="linkedin link">
+                <img class="logo" src="./images/linkedIN.png"/>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.caseyfritsch.com" alt ="portfolio link">
+                <img class="logo" src="./images/homeicon.png"/>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </header>
     <div class="canvas">
       <canvas id="shelf" width="450", height="335">bookshelf</canvas>
+    </div>
+    <div class="options">
+      <h3>Bubble Sort by</h3>
+      <button id="title-sort">Title</button>
+      <button id="author-sort">Author</button>
     </div>
     <!-- <p id="demo"></p> -->
   </div>

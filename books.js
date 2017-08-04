@@ -1,6 +1,6 @@
 const Books = [
   {
-    author: "JK Rowling",
+    author: "Rowling, JK",
     title: "Harry Potter and The Sorcerers Stone",
     spine: "./images/hp1_spine.jpeg",
     cover: "./images/hp1_cover.jpeg",
@@ -10,7 +10,7 @@ const Books = [
   },
   {
     author: "Tolkein, JRR",
-    title: "The Hobbit",
+    title: "Hobbit, The",
     spine: "./images/th_spine.jpeg",
     cover: "./images/th_cover.jpg",
     width: 9,
@@ -55,7 +55,7 @@ const Books = [
   },
   {
     author: "Douglas, Fredrick",
-    title: "The Narrative of the Life of Fredrick Douglas",
+    title: "Narrative of the Life of Fredrick Douglas, The",
     spine: "./images/TNotLoFD_spine.jpeg",
     cover: "./images/TNotLoFD_cover.jpg",
     width: 9,

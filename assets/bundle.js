@@ -221,7 +221,7 @@ var Book = function () {
 
   _createClass(Book, [{
     key: "drawCover",
-    value: function drawCover(ctx, A, B, C, D) {
+    value: function drawCover(ctx, A) {
       var img = this.CoverImage;
       var sx = 0,
           sy = 0; //start cliping from (sx,sy) relative to image
@@ -278,14 +278,14 @@ var Book = function () {
 
 
           this.drawSpine(ctx, leftBorder - xRel, topSpace, width, height);
-          this.drawCover(ctx, pointA, pointB, pointC, pointD);
+          this.drawCover(ctx, pointA);
           break;
 
         case x >= rightBorder:
 
           pointA = { x: rightBorder - 50, y: topSpace }; //topleft
 
-          this.drawCover(ctx, pointA, pointB, pointC, pointD);
+          this.drawCover(ctx, pointA);
           this.drawSpine(ctx, leftBorder - 50, topSpace, 50, 325);
           break;
 
@@ -310,7 +310,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var Books = [{
-  author: "JK Rowling",
+  author: "Rowling, JK",
   title: "Harry Potter and The Sorcerers Stone",
   spine: "./images/hp1_spine.jpeg",
   cover: "./images/hp1_cover.jpeg",
@@ -319,7 +319,7 @@ var Books = [{
   depth: 1.5
 }, {
   author: "Tolkein, JRR",
-  title: "The Hobbit",
+  title: "Hobbit, The",
   spine: "./images/th_spine.jpeg",
   cover: "./images/th_cover.jpg",
   width: 9,
@@ -361,7 +361,7 @@ var Books = [{
   depth: 0.5
 }, {
   author: "Douglas, Fredrick",
-  title: "The Narrative of the Life of Fredrick Douglas",
+  title: "Narrative of the Life of Fredrick Douglas, The",
   spine: "./images/TNotLoFD_spine.jpeg",
   cover: "./images/TNotLoFD_cover.jpg",
   width: 9,

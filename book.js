@@ -13,7 +13,7 @@ class Book {
     this.drawSpine = this.drawSpine.bind(this);
   }
 
-  drawCover(ctx, A, B, C, D){
+  drawCover(ctx, A){
     let img = this.CoverImage;
     let sx = 0, sy = 0; //start cliping from (sx,sy) relative to image
     let swidth = 10, sheight = img.height; //width and height of clipped Image
@@ -56,14 +56,14 @@ class Book {
 
 
         this.drawSpine(ctx, leftBorder-xRel, topSpace, width, height);
-        this.drawCover(ctx, pointA, pointB, pointC, pointD);
+        this.drawCover(ctx, pointA);
         break;
 
       case (x >= rightBorder):
 
         pointA = {x: rightBorder - (50), y: topSpace}; //topleft
 
-        this.drawCover(ctx, pointA, pointB, pointC, pointD);
+        this.drawCover(ctx, pointA);
         this.drawSpine(ctx,leftBorder-(50), topSpace, 50, 325);
         break;
 
