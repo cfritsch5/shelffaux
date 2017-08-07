@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("author-sort").onclick = authorbubble;
 
     function setButtonDisabled(btnClass){
-      console.log("disable", btnClass);
+      // console.log("disable", btnClass);
       let btn = document.getElementById(btnClass);
       btn.className = "disabled";
       btn.disabled = true;
