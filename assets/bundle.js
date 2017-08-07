@@ -85,8 +85,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
   var ctx = canvas.getContext('2d');
   var books = addBooks();
   var bookWidth = 50;
+
   function draw(x, y) {
     x -= canvas.getBoundingClientRect().left;
+
     var bound = bookWidth * 2;
     ctx.clearRect(x - bound, 0, x + bound, canvas.height);
 

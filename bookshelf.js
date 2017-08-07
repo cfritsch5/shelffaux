@@ -6,8 +6,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
   var ctx = canvas.getContext('2d');
   var books = addBooks();
   var bookWidth = 50;
+
     function draw(x, y) {
       x -= canvas.getBoundingClientRect().left;
+
       let bound = bookWidth * 2;
       ctx.clearRect(x-bound, 0, x+bound, canvas.height);
 
@@ -63,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function enableButton(btnClass){
-      console.log("endable",btnClass);
+      // console.log("endable",btnClass);
       let btn = document.getElementById(btnClass);
       btn.className = "enabled";
       btn.disabled = false;
@@ -74,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     setTimeout(()=>clearInterval(start),3000);
 
     const bubbleBooks = function (prop){
-      console.log("sorting");
+      // console.log("sorting");
       document.createElement("h1").innerHTML = "SoRting";
       const go = setInterval( ()=>{
         let callCompar;
