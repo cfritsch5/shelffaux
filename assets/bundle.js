@@ -140,14 +140,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
   document.getElementById("author-sort").onclick = authorbubble;
 
   function setButtonDisabled(btnClass) {
-    console.log("disable", btnClass);
+    // console.log("disable", btnClass);
     var btn = document.getElementById(btnClass);
     btn.className = "disabled";
     btn.disabled = true;
   }
 
   function enableButton(btnClass) {
-    console.log("endable", btnClass);
+    // console.log("endable",btnClass);
     var btn = document.getElementById(btnClass);
     btn.className = "enabled";
     btn.disabled = false;
@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   }, 3000);
 
   var bubbleBooks = function bubbleBooks(prop) {
-    console.log("sorting");
+    // console.log("sorting");
     document.createElement("h1").innerHTML = "SoRting";
     var go = setInterval(function () {
       var callCompar = void 0;
