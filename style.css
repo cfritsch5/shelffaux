@@ -7,6 +7,7 @@ body {
   background-position: center;
   background-repeat: no-repeat;
 }
+
 .main {
   display: flex;
   justify-content: center;
@@ -19,12 +20,10 @@ header {
 }
 
 h1 {
-  padding: 0;
   padding-left: 30px;
   padding-top: 10px;
   margin: 0;
   font-size: 80px;
-  color: #a7a7a7;
 }
 
 h1 a {
@@ -76,8 +75,6 @@ nav {
 
 .options .disabled {
   opacity: 0.5;
-}
-.options .disabled:hover {
   cursor: not-allowed;
 }
 
