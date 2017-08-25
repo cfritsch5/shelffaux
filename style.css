@@ -66,7 +66,7 @@ nav {
   border-radius: 100%;
   text-align: center;
   background: black;
-  color: #a7a7a7;
+  color: #686868;
   font-size: 16px;
   font-weight: bolder;
   text-decoration: none;
@@ -75,16 +75,13 @@ nav {
 }
 
 .options .disabled {
-  /*background-color:  #8c8c8c*/
   opacity: 0.5;
 }
 .options .disabled:hover {
-  /*background-color: #8c8c8c;*/
   cursor: not-allowed;
 }
 
 .options button:hover, .logo:hover {
-  /*background: #6b6b6b*/
   opacity: 0.5;
 }
 
