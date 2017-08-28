@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/cfritsch5/shelffaux#readme",
   "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
     "es6-promise": "^3.1.2",
     "webpack": "^3.4.1"

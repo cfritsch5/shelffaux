@@ -125,11 +125,32 @@ document.addEventListener("DOMContentLoaded", function (event) {
     var y = e.clientY;
     draw(x, y);
   }
+
+  function showbook(e) {
+    var x = e.clientX;
+    var rect = canvas.getBoundingClientRect();
+    x -= rect.left;
+
+    var showthisbook = void 0;
+    books.forEach(function (isbook) {
+      if (x >= isbook.leftBorder) {
+        showthisbook = isbook;
+      }
+    });
+
+    console.log("showbook", showthisbook);
+    // this.ctx.drawImage(img, startClipX, startClipY, clipWidth, clipHeight,x,y,dw,dh);
+
+    ctx.drawImage(showthisbook.CoverImage, showthisbook.rightBorder - 150, 0, 225, 325);
+    // alert(e.clientX + ',' + e.clientY);
+  }
+
   function titlebubble() {
     bubbleBooks("title");
     setButtonDisabled("title-sort");
     setButtonDisabled("author-sort");
   }
+
   function authorbubble() {
     bubbleBooks("author");
     setButtonDisabled("author-sort");
@@ -154,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   }
 
   canvas.addEventListener('mousemove', browse, false);
+  canvas.addEventListener('click', showbook);
   var start = setInterval(function () {
     return draw(0, 0);
   }, 100);

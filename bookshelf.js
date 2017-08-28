@@ -43,11 +43,33 @@ document.addEventListener("DOMContentLoaded", function(event) {
       const y = e.clientY;
       draw(x,y);
     }
+
+    function showbook(e){
+      let x = e.clientX;
+      let rect = canvas.getBoundingClientRect();
+      x -= rect.left;
+
+      let showthisbook;
+      books.forEach((isbook)=>{
+        if (x >= isbook.leftBorder){
+          showthisbook = isbook;
+        }
+      });
+
+
+      console.log("showbook",showthisbook);
+      // this.ctx.drawImage(img, startClipX, startClipY, clipWidth, clipHeight,x,y,dw,dh);
+
+      ctx.drawImage(showthisbook.CoverImage, showthisbook.rightBorder - 150,0,225,325);
+      // alert(e.clientX + ',' + e.clientY);
+    }
+
     function titlebubble(){
       bubbleBooks("title");
       setButtonDisabled("title-sort");
       setButtonDisabled("author-sort");
     }
+
     function authorbubble(){
       bubbleBooks("author");
       setButtonDisabled("author-sort");
@@ -72,8 +94,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     canvas.addEventListener('mousemove',browse,false);
+    canvas.addEventListener('click',showbook);
     const start = setInterval(()=>(draw(0,0)),100);
     setTimeout(()=>clearInterval(start),3000);
+
 
     const bubbleBooks = function (prop){
       // console.log("sorting");
