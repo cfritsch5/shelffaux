@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   var ctx = canvas.getContext('2d');
   var books = addBooks();
   var bookWidth = 50;
+  var show = false;
 
     function draw(x, y) {
       x -= canvas.getBoundingClientRect().left;
@@ -13,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       let bound = bookWidth * 2;
       ctx.clearRect(x-bound, 0, x+bound, canvas.height);
 
-      let book, position = bookWidth;
+      let book, position = 100;
       for(let i = 0 ; i < books.length; i++ ) {
         books[i].leftBorder = position;
         position +=  bookWidth;
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         book = books[i];
         book.draw(ctx, x, y);
       }
+
     }
 
     function addBooks(){
@@ -32,7 +34,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         spine = new Image();
         spine.src = Books[i].spine;
         // books[i] = books[i] || {cover: "", spine: ""};
-        book = new Book(cover, spine, 0, 0, Books[i].author, Books[i].title, Books[i].depth);
+        // book = new Book(cover, spine, 0, 0, Books[i].author, Books[i].title, Books[i].depth, Books[i].review);
+        book = new Book(cover, spine, 0, 0,
+          Books[i].author, Books[i].title,
+          Books[i].review, Books[i].stars);
         _books.push(book);
       }
       return _books;
@@ -46,22 +51,41 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     function showbook(e){
       let x = e.clientX;
+      let y = e.clientY;
       let rect = canvas.getBoundingClientRect();
-      x -= rect.left;
 
-      let showthisbook;
-      books.forEach((isbook)=>{
-        if (x >= isbook.leftBorder){
-          showthisbook = isbook;
-        }
-      });
+      if (show === true ){
+        canvas.addEventListener('mousemove',browse,false);
+        show = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw(x,y);
+        document.getElementById('right').innerHTML = "";
+      } else {
+        canvas.removeEventListener("mousemove", browse, false);
+        show = true;
 
+        x -= rect.left;
 
-      console.log("showbook",showthisbook);
-      // this.ctx.drawImage(img, startClipX, startClipY, clipWidth, clipHeight,x,y,dw,dh);
+        let showthisbook;
+        books.forEach((isbook)=>{
+          if (x > isbook.leftBorder && x < isbook.rightBorder){
+            showthisbook = isbook;
+          }
+        });
 
-      ctx.drawImage(showthisbook.CoverImage, showthisbook.rightBorder - 150,0,225,325);
-      // alert(e.clientX + ',' + e.clientY);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw(x,y);
+        showthisbook.showCover(ctx,x,y);
+
+        document.getElementById('right').innerHTML = `
+        <div class="bookDisplay">
+        <h3>${showthisbook.title}</h3>
+        <h4>By: ${showthisbook.author}</h4>
+        <p> ${showthisbook.stars}</p>
+        <p> ${showthisbook.review}</p>
+        </div>
+        `;
+      }
     }
 
     function titlebubble(){

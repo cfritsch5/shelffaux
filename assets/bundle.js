@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   var ctx = canvas.getContext('2d');
   var books = addBooks();
   var bookWidth = 50;
+  var show = false;
 
   function draw(x, y) {
     x -= canvas.getBoundingClientRect().left;
@@ -93,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     ctx.clearRect(x - bound, 0, x + bound, canvas.height);
 
     var book = void 0,
-        position = bookWidth;
+        position = 100;
     for (var i = 0; i < books.length; i++) {
       books[i].leftBorder = position;
       position += bookWidth;
@@ -114,7 +115,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
       spine = new Image();
       spine.src = _books3.default[i].spine;
       // books[i] = books[i] || {cover: "", spine: ""};
-      book = new _book2.default(cover, spine, 0, 0, _books3.default[i].author, _books3.default[i].title, _books3.default[i].depth);
+      // book = new Book(cover, spine, 0, 0, Books[i].author, Books[i].title, Books[i].depth, Books[i].review);
+      book = new _book2.default(cover, spine, 0, 0, _books3.default[i].author, _books3.default[i].title, _books3.default[i].review, _books3.default[i].stars);
       _books.push(book);
     }
     return _books;
@@ -128,21 +130,34 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
   function showbook(e) {
     var x = e.clientX;
+    var y = e.clientY;
     var rect = canvas.getBoundingClientRect();
-    x -= rect.left;
 
-    var showthisbook = void 0;
-    books.forEach(function (isbook) {
-      if (x >= isbook.leftBorder) {
-        showthisbook = isbook;
-      }
-    });
+    if (show === true) {
+      canvas.addEventListener('mousemove', browse, false);
+      show = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      draw(x, y);
+      document.getElementById('right').innerHTML = "";
+    } else {
+      canvas.removeEventListener("mousemove", browse, false);
+      show = true;
 
-    console.log("showbook", showthisbook);
-    // this.ctx.drawImage(img, startClipX, startClipY, clipWidth, clipHeight,x,y,dw,dh);
+      x -= rect.left;
 
-    ctx.drawImage(showthisbook.CoverImage, showthisbook.rightBorder - 150, 0, 225, 325);
-    // alert(e.clientX + ',' + e.clientY);
+      var showthisbook = void 0;
+      books.forEach(function (isbook) {
+        if (x > isbook.leftBorder && x < isbook.rightBorder) {
+          showthisbook = isbook;
+        }
+      });
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      draw(x, y);
+      showthisbook.showCover(ctx, x, y);
+
+      document.getElementById('right').innerHTML = '\n        <div class="bookDisplay">\n        <h3>' + showthisbook.title + '</h3>\n        <h4>By: ' + showthisbook.author + '</h4>\n        <p> ' + showthisbook.stars + '</p>\n        <p> ' + showthisbook.review + '</p>\n        </div>\n        ';
+    }
   }
 
   function titlebubble() {
@@ -250,7 +265,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Book = function () {
-  function Book(CoverImage, SpineImage, leftBorder, rightBorder, author, title) {
+  function Book(CoverImage, SpineImage, leftBorder, rightBorder, author, title, review, stars) {
     _classCallCheck(this, Book);
 
     this.CoverImage = CoverImage;
@@ -260,13 +275,30 @@ var Book = function () {
     this.author = author;
     this.title = title;
     this.topSpace = 10;
-
+    this.show = true;
     this.draw = this.draw.bind(this);
     this.drawCover = this.drawCover.bind(this);
     this.drawSpine = this.drawSpine.bind(this);
+    this.show = this.showQ.bind(this);
+    this.review = review;
+    this.stars = stars;
   }
 
   _createClass(Book, [{
+    key: "showQ",
+    value: function showQ() {
+      var bool = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      this.show = bool;
+      console.log(this.show);
+      console.log(this.title);
+    }
+  }, {
+    key: "showCover",
+    value: function showCover(ctx, x, y) {
+      ctx.drawImage(this.CoverImage, this.leftBorder - 50, this.topSpace, 200, 325);
+    }
+  }, {
     key: "drawCover",
     value: function drawCover(ctx, A) {
       var img = this.CoverImage;
@@ -301,6 +333,10 @@ var Book = function () {
   }, {
     key: "draw",
     value: function draw(ctx, x, y) {
+      if (!this.show) {
+        console.log("no show");
+        return null;
+      }
       var leftBorder = this.leftBorder,
           rightBorder = this.rightBorder,
           topSpace = this.topSpace,
@@ -364,7 +400,9 @@ var Books = [{
   cover: "./images/hp1_cover.jpeg",
   width: 9,
   height: 7,
-  depth: 1.5
+  depth: 1.5,
+  stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
+  review: "The book that started the sensation. I partially learned to read with this book, but I find it does not stand up to repeated rereads as time goes on."
 }, {
   author: "Tolkein, JRR",
   title: "Hobbit, The",
@@ -372,7 +410,9 @@ var Books = [{
   cover: "./images/th_cover.jpg",
   width: 9,
   height: 7,
-  depth: 1
+  depth: 1,
+  stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
+  review: "A childhood favorite. I love the adventure, but truly I fell in love with the shire and Hobbits."
 }, {
   author: "Rowling, JK ",
   title: "Harry Potter and The Chamber of Secrets",
@@ -380,7 +420,9 @@ var Books = [{
   cover: "./images/hp2_cover.jpeg",
   width: 9,
   height: 7,
-  depth: 1.5
+  depth: 1.5,
+  stars: "&#9733;&#9733;&#9734;&#9734;&#9734;",
+  review: "My least favorite Harry Potter Book. I absoloutely can not stand Lockhart"
 }, {
   author: "Angelou, Maya",
   title: "I Know Why the Caged Bird Sings",
@@ -388,7 +430,9 @@ var Books = [{
   cover: "./images/IKWtCBS.jpg",
   width: 6,
   height: 6,
-  depth: 0.5
+  depth: 0.5,
+  stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
+  review: "Powerful and intimate. This book is not written for me, and I felt that, but it made it feel more poignat"
 },
 // {
 //   author: "Virginia Wolf",
@@ -406,7 +450,9 @@ var Books = [{
   cover: "./images/Fahrenheit451_cover.jpg",
   width: 9,
   height: 5.5,
-  depth: 0.5
+  depth: 0.5,
+  stars: "&#9733;&#9733;&#9733;&#9734;&#9734;",
+  review: "An interesting book to read in interesting times. The book itself is quite symbolic, but I also felt the symbolisim it aspires to is not necessarily the symbolisim interpreted."
 }, {
   author: "Douglas, Fredrick",
   title: "Narrative of the Life of Fredrick Douglas, The",
@@ -414,7 +460,9 @@ var Books = [{
   cover: "./images/TNotLoFD_cover.jpg",
   width: 9,
   height: 6,
-  depth: 0.5
+  depth: 0.5,
+  stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
+  review: ""
 }, {
   author: "Kahneman, Daniel",
   title: "Thinking Fast and Slow",
@@ -422,7 +470,9 @@ var Books = [{
   cover: "./images/TFaS_cover.jpeg",
   width: 9,
   height: 7,
-  depth: 0.7
+  depth: 0.7,
+  stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
+  review: "The often sited book that explores why and how the brain uses heuristics to lower the cost of decision making, and the ways that can go awry"
 }];
 
 exports.default = Books;
