@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
       let bound = bookWidth * 2;
       ctx.clearRect(x-bound, 0, x+bound, canvas.height);
+      ctx.clearRect(0, 0, 100, canvas.height);
 
       let book, position = 100;
       for(let i = 0 ; i < books.length; i++ ) {
@@ -74,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         });
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw(x,y);
+        draw(x + rect.left,y);
         showthisbook.showCover(ctx,x,y);
 
         document.getElementById('right').innerHTML = `

@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     var bound = bookWidth * 2;
     ctx.clearRect(x - bound, 0, x + bound, canvas.height);
+    ctx.clearRect(0, 0, 100, canvas.height);
 
     var book = void 0,
         position = 100;
@@ -153,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       });
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      draw(x, y);
+      draw(x + rect.left, y);
       showthisbook.showCover(ctx, x, y);
 
       document.getElementById('right').innerHTML = '\n        <div class="bookDisplay">\n        <h3>' + showthisbook.title + '</h3>\n        <h4>By: ' + showthisbook.author + '</h4>\n        <p> ' + showthisbook.stars + '</p>\n        <p> ' + showthisbook.review + '</p>\n        </div>\n        ';
