@@ -72,7 +72,7 @@ const Books = [
     height: 6,
     depth: 0.5,
     stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
-    review: ""
+    review: "An important book to read to understand the sheer scope and magnitude of how slavery shaped American History."
   },
   {
     author: "Kahneman, Daniel",
