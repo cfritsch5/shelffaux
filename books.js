@@ -41,7 +41,7 @@ const Books = [
     height: 6,
     depth: 0.5,
     stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
-    review: "Powerful and intimate. This book is not written for me, and I felt that, but it made it feel more poignat"
+    review: "Powerful and intimate. This book is not written for me, and I felt that, but it made it feel more poignant"
   },
   // {
   //   author: "Virginia Wolf",
