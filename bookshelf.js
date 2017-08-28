@@ -6,14 +6,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
   var ctx = canvas.getContext('2d');
   var books = addBooks();
   var bookWidth = 50;
+  var show = false;
 
     function draw(x, y) {
       x -= canvas.getBoundingClientRect().left;
 
       let bound = bookWidth * 2;
       ctx.clearRect(x-bound, 0, x+bound, canvas.height);
+      ctx.clearRect(0, 0, 100, canvas.height);
 
-      let book, position = bookWidth;
+      let book, position = 100;
       for(let i = 0 ; i < books.length; i++ ) {
         books[i].leftBorder = position;
         position +=  bookWidth;
@@ -21,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         book = books[i];
         book.draw(ctx, x, y);
       }
+
     }
 
     function addBooks(){
@@ -32,7 +35,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         spine = new Image();
         spine.src = Books[i].spine;
         // books[i] = books[i] || {cover: "", spine: ""};
-        book = new Book(cover, spine, 0, 0, Books[i].author, Books[i].title, Books[i].depth);
+        // book = new Book(cover, spine, 0, 0, Books[i].author, Books[i].title, Books[i].depth, Books[i].review);
+        book = new Book(cover, spine, 0, 0,
+          Books[i].author, Books[i].title,
+          Books[i].review, Books[i].stars);
         _books.push(book);
       }
       return _books;
@@ -43,11 +49,52 @@ document.addEventListener("DOMContentLoaded", function(event) {
       const y = e.clientY;
       draw(x,y);
     }
+
+    function showbook(e){
+      let x = e.clientX;
+      let y = e.clientY;
+      let rect = canvas.getBoundingClientRect();
+
+      if (show === true ){
+        canvas.addEventListener('mousemove',browse,false);
+        show = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw(x,y);
+        document.getElementById('right').innerHTML = "";
+      } else {
+        canvas.removeEventListener("mousemove", browse, false);
+        show = true;
+
+        x -= rect.left;
+
+        let showthisbook;
+        books.forEach((isbook)=>{
+          if (x > isbook.leftBorder && x < isbook.rightBorder){
+            showthisbook = isbook;
+          }
+        });
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        draw(x + rect.left,y);
+        showthisbook.showCover(ctx,x,y);
+
+        document.getElementById('right').innerHTML = `
+        <div class="bookDisplay">
+        <h3>${showthisbook.title}</h3>
+        <h4>By: ${showthisbook.author}</h4>
+        <p> ${showthisbook.stars}</p>
+        <p> ${showthisbook.review}</p>
+        </div>
+        `;
+      }
+    }
+
     function titlebubble(){
       bubbleBooks("title");
       setButtonDisabled("title-sort");
       setButtonDisabled("author-sort");
     }
+
     function authorbubble(){
       bubbleBooks("author");
       setButtonDisabled("author-sort");
@@ -72,8 +119,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     canvas.addEventListener('mousemove',browse,false);
+    canvas.addEventListener('click',showbook);
     const start = setInterval(()=>(draw(0,0)),100);
     setTimeout(()=>clearInterval(start),3000);
+
 
     const bubbleBooks = function (prop){
       // console.log("sorting");

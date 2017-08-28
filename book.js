@@ -1,5 +1,5 @@
 class Book {
-  constructor(CoverImage, SpineImage, leftBorder, rightBorder, author, title){
+  constructor(CoverImage, SpineImage, leftBorder, rightBorder, author, title, review, stars){
     this.CoverImage = CoverImage;
     this.SpineImage = SpineImage;
     this.leftBorder = leftBorder;
@@ -7,10 +7,23 @@ class Book {
     this.author = author;
     this.title = title;
     this.topSpace = 10;
-
+    this.show = true;
     this.draw = this.draw.bind(this);
     this.drawCover = this.drawCover.bind(this);
     this.drawSpine = this.drawSpine.bind(this);
+    this.show = this.showQ.bind(this);
+    this.review = review;
+    this.stars = stars;
+  }
+
+  showQ(bool = false){
+    this.show = bool;
+    console.log(this.show);
+    console.log(this.title);
+  }
+
+  showCover(ctx,x,y){
+    ctx.drawImage(this.CoverImage,this.leftBorder-50,this.topSpace,200,325);
   }
 
   drawCover(ctx, A){
@@ -40,7 +53,10 @@ class Book {
   }
 
   draw(ctx, x, y){
-
+    if (!this.show) {
+      console.log("no show");
+      return null;
+    }
     let {leftBorder, rightBorder, topSpace, width, height, mid}= this;
     let xRel = x - leftBorder; //x relative to book left border
     let pointA, pointB, pointC, pointD;
