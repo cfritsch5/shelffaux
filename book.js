@@ -23,7 +23,7 @@ class Book {
   }
 
   showCover(ctx,x,y){
-    ctx.drawImage(this.CoverImage,this.leftBorder-50,this.topSpace,200,325);
+    ctx.drawImage(this.CoverImage,this.leftBorder-50,0,200,335);
   }
 
   drawCover(ctx, A){

@@ -297,7 +297,7 @@ var Book = function () {
   }, {
     key: "showCover",
     value: function showCover(ctx, x, y) {
-      ctx.drawImage(this.CoverImage, this.leftBorder - 50, this.topSpace, 200, 325);
+      ctx.drawImage(this.CoverImage, this.leftBorder - 50, 0, 200, 335);
     }
   }, {
     key: "drawCover",
@@ -433,7 +433,7 @@ var Books = [{
   height: 6,
   depth: 0.5,
   stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
-  review: "Powerful and intimate. This book is not written for me, and I felt that, but it made it feel more poignat"
+  review: "Powerful and intimate. This book is not written for me, and I felt that, but it made it feel more poignant"
 },
 // {
 //   author: "Virginia Wolf",
@@ -463,7 +463,7 @@ var Books = [{
   height: 6,
   depth: 0.5,
   stars: "&#9733;&#9733;&#9733;&#9733;&#9734;",
-  review: ""
+  review: "An important book to read to understand the sheer scope and magnitude of how slavery shaped American History."
 }, {
   author: "Kahneman, Daniel",
   title: "Thinking Fast and Slow",
