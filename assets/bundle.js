@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       draw(x + rect.left, y);
       showthisbook.showCover(ctx, x, y);
 
-      document.getElementById('right').innerHTML = '\n        <div class="bookDisplay">\n        <h3>' + showthisbook.title + '</h3>\n        <h4>By: ' + showthisbook.author + '</h4>\n        <p> ' + showthisbook.stars + '</p>\n        <p> ' + showthisbook.review + '</p>\n        </div>\n        ';
+      document.getElementById('right').innerHTML = '\n        <div class="bookDisplay">\n        <h3>' + showthisbook.title + '</h3>\n        <h4>By: ' + showthisbook.author + '</h4>\n        <p> ' + showthisbook.stars + '</p>\n        <p>Notes: </p>\n        <p> ' + showthisbook.review + '</p>\n        </div>\n        ';
     }
   }
 
