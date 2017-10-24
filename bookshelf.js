@@ -83,6 +83,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         <h3>${showthisbook.title}</h3>
         <h4>By: ${showthisbook.author}</h4>
         <p> ${showthisbook.stars}</p>
+        <p>Notes:</p>
         <p> ${showthisbook.review}</p>
         </div>
         `;
