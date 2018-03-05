@@ -3,28 +3,7 @@ import Books from './books';
 
 document.addEventListener("DOMContentLoaded", function(event) {
   var canvas = document.getElementById('shelf');
-  var ctx = canvas.getContext('2d');
   var books = addBooks();
-  var bookWidth = 50;
-  var show = false;
-
-    function draw(x, y) {
-      x -= canvas.getBoundingClientRect().left;
-
-      let bound = bookWidth * 2;
-      ctx.clearRect(x-bound, 0, x+bound, canvas.height);
-      ctx.clearRect(0, 0, 100, canvas.height);
-
-      let book, position = 100;
-      for(let i = 0 ; i < books.length; i++ ) {
-        books[i].leftBorder = position;
-        position +=  bookWidth;
-        books[i].rightBorder = position;
-        book = books[i];
-        book.draw(ctx, x, y);
-      }
-
-    }
 
     function addBooks(){
       let cover, spine, book = {};
@@ -47,63 +26,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function browse(e){
       const x = e.clientX;
       const y = e.clientY;
-      draw(x,y);
     }
 
-    function showbook(e){
-      let x = e.clientX;
-      let y = e.clientY;
-      let rect = canvas.getBoundingClientRect();
-
-      if (show === true ){
-        canvas.addEventListener('mousemove',browse,false);
-        show = false;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw(x,y);
-        document.getElementById('right').innerHTML = "";
-      } else {
-        canvas.removeEventListener("mousemove", browse, false);
-        show = true;
-
-        x -= rect.left;
-
-        let showthisbook;
-        books.forEach((isbook)=>{
-          if (x > isbook.leftBorder && x < isbook.rightBorder){
-            showthisbook = isbook;
-          }
-        });
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw(x + rect.left,y);
-        showthisbook.showCover(ctx,x,y);
-
-        document.getElementById('right').innerHTML = `
-        <div class="bookDisplay">
-        <h3>${showthisbook.title}</h3>
-        <h4>By: ${showthisbook.author}</h4>
-        <p> ${showthisbook.stars}</p>
-        <p>Notes: </p>
-        <p> ${showthisbook.review}</p>
-        </div>
-        `;
-      }
-    }
-
-    function titlebubble(){
-      bubbleBooks("title");
-      setButtonDisabled("title-sort");
-      setButtonDisabled("author-sort");
-    }
-
-    function authorbubble(){
-      bubbleBooks("author");
-      setButtonDisabled("author-sort");
-      setButtonDisabled("title-sort");
-    }
-
-    document.getElementById("title-sort").onclick = titlebubble;
-    document.getElementById("author-sort").onclick = authorbubble;
 
     function setButtonDisabled(btnClass){
       // console.log("disable", btnClass);
@@ -118,56 +42,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
       btn.className = "enabled";
       btn.disabled = false;
     }
-
-    canvas.addEventListener('mousemove',browse,false);
-    canvas.addEventListener('click',showbook);
-    const start = setInterval(()=>(draw(0,0)),100);
-    setTimeout(()=>clearInterval(start),3000);
-
-
-    const bubbleBooks = function (prop){
-      // console.log("sorting");
-      document.createElement("h1").innerHTML = "SoRting";
-      const go = setInterval( ()=>{
-        let callCompar;
-        let sorted = false;
-        let temp = {};
-
-        if(typeof prop === "string"){
-          //set comparator callback
-          callCompar = (i,j) => (Books[i][prop].localeCompare(Books[j][prop]) > 0);
-          // console.log("str cal comp", callCompar(0,1));
-        } else {
-          callCompar = (i,j) => (Books[i][prop] > (Books[j][prop]));
-        }
-
-        for(let i = 0, j = i + 1; i < Books.length - 1 ; i++, j++){
-
-          if(callCompar(i,j)){
-
-            temp = books[i];
-            books[i] = books[j];
-            books[j] = temp;
-            temp = Books[i];
-            Books[i] = Books[j];
-            Books[j] = temp;
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            draw(0,0);
-            break;
-          }
-
-          if(j === Books.length - 1){
-            sorted = true;
-          }
-        }
-        if(sorted === true){
-          clearInterval(go);
-          if(prop == "author"){
-            enableButton("title-sort");
-          } else {
-            enableButton("author-sort");
-          }
-        }
-      },1000);
-    };
 });
