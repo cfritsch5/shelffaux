@@ -82,28 +82,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 document.addEventListener("DOMContentLoaded", function (event) {
   var canvas = document.getElementById('shelf');
-  var ctx = canvas.getContext('2d');
   var books = addBooks();
-  var bookWidth = 50;
-  var show = false;
-
-  function draw(x, y) {
-    x -= canvas.getBoundingClientRect().left;
-
-    var bound = bookWidth * 2;
-    ctx.clearRect(x - bound, 0, x + bound, canvas.height);
-    ctx.clearRect(0, 0, 100, canvas.height);
-
-    var book = void 0,
-        position = 100;
-    for (var i = 0; i < books.length; i++) {
-      books[i].leftBorder = position;
-      position += bookWidth;
-      books[i].rightBorder = position;
-      book = books[i];
-      book.draw(ctx, x, y);
-    }
-  }
 
   function addBooks() {
     var cover = void 0,
@@ -126,55 +105,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   function browse(e) {
     var x = e.clientX;
     var y = e.clientY;
-    draw(x, y);
   }
-
-  function showbook(e) {
-    var x = e.clientX;
-    var y = e.clientY;
-    var rect = canvas.getBoundingClientRect();
-
-    if (show === true) {
-      canvas.addEventListener('mousemove', browse, false);
-      show = false;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      draw(x, y);
-      document.getElementById('right').innerHTML = "";
-    } else {
-      canvas.removeEventListener("mousemove", browse, false);
-      show = true;
-
-      x -= rect.left;
-
-      var showthisbook = void 0;
-      books.forEach(function (isbook) {
-        if (x > isbook.leftBorder && x < isbook.rightBorder) {
-          showthisbook = isbook;
-        }
-      });
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      draw(x + rect.left, y);
-      showthisbook.showCover(ctx, x, y);
-
-      document.getElementById('right').innerHTML = '\n        <div class="bookDisplay">\n        <h3>' + showthisbook.title + '</h3>\n        <h4>By: ' + showthisbook.author + '</h4>\n        <p> ' + showthisbook.stars + '</p>\n        <p>Notes: </p>\n        <p> ' + showthisbook.review + '</p>\n        </div>\n        ';
-    }
-  }
-
-  function titlebubble() {
-    bubbleBooks("title");
-    setButtonDisabled("title-sort");
-    setButtonDisabled("author-sort");
-  }
-
-  function authorbubble() {
-    bubbleBooks("author");
-    setButtonDisabled("author-sort");
-    setButtonDisabled("title-sort");
-  }
-
-  document.getElementById("title-sort").onclick = titlebubble;
-  document.getElementById("author-sort").onclick = authorbubble;
 
   function setButtonDisabled(btnClass) {
     // console.log("disable", btnClass);
@@ -189,65 +120,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     btn.className = "enabled";
     btn.disabled = false;
   }
-
-  canvas.addEventListener('mousemove', browse, false);
-  canvas.addEventListener('click', showbook);
-  var start = setInterval(function () {
-    return draw(0, 0);
-  }, 100);
-  setTimeout(function () {
-    return clearInterval(start);
-  }, 3000);
-
-  var bubbleBooks = function bubbleBooks(prop) {
-    // console.log("sorting");
-    document.createElement("h1").innerHTML = "SoRting";
-    var go = setInterval(function () {
-      var callCompar = void 0;
-      var sorted = false;
-      var temp = {};
-
-      if (typeof prop === "string") {
-        //set comparator callback
-        callCompar = function callCompar(i, j) {
-          return _books3.default[i][prop].localeCompare(_books3.default[j][prop]) > 0;
-        };
-        // console.log("str cal comp", callCompar(0,1));
-      } else {
-        callCompar = function callCompar(i, j) {
-          return _books3.default[i][prop] > _books3.default[j][prop];
-        };
-      }
-
-      for (var i = 0, j = i + 1; i < _books3.default.length - 1; i++, j++) {
-
-        if (callCompar(i, j)) {
-
-          temp = books[i];
-          books[i] = books[j];
-          books[j] = temp;
-          temp = _books3.default[i];
-          _books3.default[i] = _books3.default[j];
-          _books3.default[j] = temp;
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          draw(0, 0);
-          break;
-        }
-
-        if (j === _books3.default.length - 1) {
-          sorted = true;
-        }
-      }
-      if (sorted === true) {
-        clearInterval(go);
-        if (prop == "author") {
-          enableButton("title-sort");
-        } else {
-          enableButton("author-sort");
-        }
-      }
-    }, 1000);
-  };
 });
 
 /***/ }),
@@ -261,126 +133,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Book = function () {
-  function Book(CoverImage, SpineImage, leftBorder, rightBorder, author, title, review, stars) {
-    _classCallCheck(this, Book);
-
-    this.CoverImage = CoverImage;
-    this.SpineImage = SpineImage;
-    this.leftBorder = leftBorder;
-    this.rightBorder = rightBorder;
-    this.author = author;
-    this.title = title;
-    this.topSpace = 10;
-    this.show = true;
-    this.draw = this.draw.bind(this);
-    this.drawCover = this.drawCover.bind(this);
-    this.drawSpine = this.drawSpine.bind(this);
-    this.show = this.showQ.bind(this);
-    this.review = review;
-    this.stars = stars;
-  }
-
-  _createClass(Book, [{
-    key: "showQ",
-    value: function showQ() {
-      var bool = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-      this.show = bool;
-      console.log(this.show);
-      console.log(this.title);
-    }
-  }, {
-    key: "showCover",
-    value: function showCover(ctx, x, y) {
-      ctx.drawImage(this.CoverImage, this.leftBorder - 50, 0, 200, 335);
-    }
-  }, {
-    key: "drawCover",
-    value: function drawCover(ctx, A) {
-      var img = this.CoverImage;
-      var sx = 0,
-          sy = 0; //start cliping from (sx,sy) relative to image
-      var swidth = 10,
-          sheight = img.height; //width and height of clipped Image
-      var x = A.x,
-          y = A.y; // coordinates where to start drawing Image
-      var width = 2,
-          height = 325; //display width & height aka stretch or reduce image
-
-      var coverWidth = this.rightBorder - A.x;
-      var sample = Math.floor(img.width / coverWidth);
-      swidth = sample;
-
-      var deltaY = 25 / coverWidth;
-      for (var i = 0; i < coverWidth; i++) {
-        sx += sample;
-        y += deltaY;
-        height -= deltaY * 2;
-        ctx.drawImage(img, sx, sy, swidth, sheight, x, y, width, height);
-        x += 1;
-      }
-    }
-  }, {
-    key: "drawSpine",
-    value: function drawSpine(ctx, xstart, ystart, plusxWide, plusyTall) {
-      var img = this.SpineImage;
-      ctx.drawImage(img, xstart, ystart, 50, 325);
-    }
-  }, {
-    key: "draw",
-    value: function draw(ctx, x, y) {
-      if (!this.show) {
-        console.log("no show");
-        return null;
-      }
-      var leftBorder = this.leftBorder,
-          rightBorder = this.rightBorder,
-          topSpace = this.topSpace,
-          width = this.width,
-          height = this.height,
-          mid = this.mid;
-
-      var xRel = x - leftBorder; //x relative to book left border
-      var pointA = void 0,
-          pointB = void 0,
-          pointC = void 0,
-          pointD = void 0;
-
-      switch (true) {
-
-        case x <= leftBorder:
-          this.drawSpine(ctx, leftBorder, topSpace, width, height);
-          break;
-
-        case x >= leftBorder && x < rightBorder:
-
-          pointA = { x: rightBorder - xRel, y: topSpace }; //topleft
-
-
-          this.drawSpine(ctx, leftBorder - xRel, topSpace, width, height);
-          this.drawCover(ctx, pointA);
-          break;
-
-        case x >= rightBorder:
-
-          pointA = { x: rightBorder - 50, y: topSpace }; //topleft
-
-          this.drawCover(ctx, pointA);
-          this.drawSpine(ctx, leftBorder - 50, topSpace, 50, 325);
-          break;
-
-        default:
-      }
-    }
-  }]);
-
-  return Book;
-}();
+var Book = function Book(bookObj) {
+  _classCallCheck(this, Book);
+};
 
 exports.default = Book;
 
