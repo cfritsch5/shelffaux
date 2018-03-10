@@ -1,15 +1,8 @@
 class Book {
   constructor(bookObj){
     this.book = bookObj;
-    // var cover = new Image();
-    // cover.src = bookObj.cover;
-    // var back = new Image();
-    // back.src = bookObj.back;
-    // var spine = new Image();
-    // spine.src = bookObj.spine;
     this.shortcode();
     this.html = this.createHtmlObject();
-    // return this.createHtmlObject();
   }
 
   shortcode(){
@@ -48,7 +41,6 @@ class Book {
     bookWrapper.classList.add('book', this.title);
     container.classList.add('container', `${this.title}container`);
     box.classList.add('box', `${this.title}-box`);
-    // bookWrapper.innerHTML = (this.book.title);
     cover.classList.add('right','side');
     back.classList.add('left','side');
     spine.classList.add('front','side');
