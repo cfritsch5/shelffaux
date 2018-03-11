@@ -30,7 +30,7 @@ t   |___|/ d
   justify-content: center;
   align-items: flex-end;
   /*temp style useful in development*/
-      transform: rotateX(-15deg);
+      transform: rotateX(-30deg);
 }
 
 .book {

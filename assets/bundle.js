@@ -101,6 +101,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
   function shelvebooks() {
     for (var i = 0; i < books.length; i++) {
       shelf.appendChild(books[i].html);
+      var rect = books[i].x = books[i].html.getBoundingClientRect().x;
+      // console.log(rect);
       // click on particular book then mouseover to turn only that book
       books[i].html.addEventListener('click', toggleBrowse);
 
@@ -136,12 +138,17 @@ document.addEventListener("DOMContentLoaded", function (event) {
     // currently rotate from browse and translate from here overwrite eachother
     // may have to later do some sort of adding of transformations
     // console.log(b);
+    elem.style['pointer-events'] = 'none';
     document.addEventListener('click', function clickOncetoPutBack() {
       // put back on click
       elem.style.transform = 'translateX(0px) rotateY(0deg)translateZ(250px)';
       setTimeout(function () {
         elem.style.transform = 'translateZ(0px)';
         // elem.style['transition-duration'] = '2s';
+        elem.style['pointer-events'] = 'inherit';
+        setTimeout(function () {
+          elem.style['transition-duration'] = '0s';
+        }, 900);
       }, 900);
       document.removeEventListener('click', clickOncetoPutBack);
     });
@@ -161,55 +168,77 @@ document.addEventListener("DOMContentLoaded", function (event) {
   }
 
   function dragStart(e) {
-    // e.preventDefault();
     var blank = new Image();
     e.dataTransfer.setDragImage(blank, 0, 0);
     var title = e.currentTarget.classList[1];
     var obj = findBookObject(title);
-    // console.log(obj);
-    // console.log(e);
     browse(e);
   }
 
   function findBookObject(title) {
     for (var i = 0; i < books.length; i++) {
-      if (books[i].title == title) {
+      if (books[i].title === title) {
         return books[i];
       }
     }
   }
 
   function browse(e) {
-    // let last = e.currentTarget.style.transform;
-    // let re = /\((.*?)\)/;
-    // let m = last.match(re);
-    // let int = 0;
-    // if(m){
-    //   int = parseInt(m[0].slice(1,m[0].length-4));
-    //   int = e.movementX + int;
-    // }
     var title = e.currentTarget.classList[1];
     var bookObj = findBookObject(title);
-    console.log(Math.asin(e.movementX / 100), e.movementX, bookObj.angle);
+    // console.log(Math.asin(e.movementX/100), e.movementX, bookObj.angle);
     bookObj.angle = e.movementX / 2 + bookObj.angle;
     e.currentTarget.style.transform = 'rotateY(' + bookObj.angle + 'deg)';
+    updateAngles(bookObj, e.movementX);
   }
 
-  function setButtonDisabled(btnClass) {
-    var btn = document.getElementById(btnClass);
-    btn.className = "disabled";
-    btn.disabled = true;
+  function updateAngles(bookObj, movementX) {
+    console.log(movementX);
+    var self = bookObj.x;
+    if (movementX > 0) {
+      for (var i = 0; i < books.length; i++) {
+        // console.log(books[i].x);
+        if (books[i].x > bookObj.x && books[i].angle < books[i - 1].angle) {
+          console.log('angle', books[i].angle);
+          books[i].angle = books[i - 1].angle;
+          // books[i].html.style.border ='3px solid blue';
+          books[i].html.style.transform = 'rotateY(' + bookObj.angle + 'deg)';
+        }
+      }
+    } else {
+      // movement < 0
+      for (var _i = 0; _i < books.length; _i++) {
+        // console.log(books[i].x);
+        if (books[_i].x < bookObj.x && books[_i].angle > books[_i + 1].angle) {
+          console.log('angle', books[_i].angle);
+          books[_i].angle = books[_i + 1].angle;
+          // books[i].html.style.border ='3px solid blue';
+          books[_i].html.style.transform = 'rotateY(' + bookObj.angle + 'deg)';
+        }
+      }
+    }
+    // for(let i = 0; i < books.length; i++){
+    //   books[i].angle = bookObj.angle;
+    //   books[i].html.style.transform = `rotateY(${bookObj.angle}deg)`;
+    // }
   }
 
-  function enableButton(btnClass) {
-    var btn = document.getElementById(btnClass);
-    btn.className = "enabled";
-    btn.disabled = false;
-  }
+  // function setButtonDisabled(btnClass){
+  //   let btn = document.getElementById(btnClass);
+  //   btn.className = "disabled";
+  //   btn.disabled = true;
+  // }
+  //
+  // function enableButton(btnClass){
+  //   let btn = document.getElementById(btnClass);
+  //   btn.className = "enabled";
+  //   btn.disabled = false;
+  // }
 
-  document.addEventListener('keydown', function (e) {
-    shelf.classList.toggle('no-clicky');
-  });
+  // document.addEventListener('keydown', function(e) {
+  //   shelf.classList.toggle('no-clicky');
+  //   console.log('keydown');
+  // });
   //
   // shelf.addEventListener('mousemove', cust, false);
   //
@@ -246,6 +275,7 @@ var Book = function () {
     this.clicked = false;
     this.html = this.createHtmlObject();
     this.angle = 0;
+    this.x = 0;
   }
 
   _createClass(Book, [{

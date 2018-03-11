@@ -5,6 +5,7 @@ class Book {
     this.clicked = false;
     this.html = this.createHtmlObject();
     this.angle = 0;
+    this.x = 0;
   }
 
   shortcode(){
