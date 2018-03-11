@@ -4,6 +4,7 @@ class Book {
     this.shortcode();
     this.clicked = false;
     this.html = this.createHtmlObject();
+    this.angle = 0;
   }
 
   shortcode(){
