@@ -101,11 +101,47 @@ document.addEventListener("DOMContentLoaded", function (event) {
   function shelvebooks() {
     for (var i = 0; i < books.length; i++) {
       shelf.appendChild(books[i].html);
-      books[i].html.addEventListener('mousemove', browse, false);
+      books[i].html.addEventListener('click', toggleBrowse);
+      // books[i].html.addEventListener('mousemove',browse,false);
+      // books[i].html.ondragstart = dragStart;
+      // books[i].html.ondrag = browse;
+    }
+  }
+
+  function toggleBrowse(e) {
+    var title = e.currentTarget.classList[1];
+    var obj = findBookObject(title);
+
+    if (obj.clicked) {
+      obj.html.removeEventListener('mousemove', browse, false);
+      obj.clicked = false;
+    } else {
+      obj.html.addEventListener('mousemove', browse, false);
+      obj.clicked = true;
+    }
+  }
+
+  //
+  // function dragStart(e){
+  //   // e.preventDefault();
+  //   let blank  = new Image;
+  //   e.dataTransfer.setDragImage(blank,0,0);
+  //   let title = e.currentTarget.classList[1];
+  //   let obj = findBookObject(title);
+  //   // console.log(obj);
+  //   // console.log(e);
+  // }
+
+  function findBookObject(title) {
+    for (var i = 0; i < books.length; i++) {
+      if (books[i].title == title) {
+        return books[i];
+      }
     }
   }
 
   function browse(e) {
+    console.log('browse', e.clientX);
     var last = e.currentTarget.style.transform;
     var re = /\((.*?)\)/;
     var m = last.match(re);
@@ -155,6 +191,7 @@ var Book = function () {
 
     this.book = bookObj;
     this.shortcode();
+    this.clicked = false;
     this.html = this.createHtmlObject();
   }
 
@@ -212,6 +249,8 @@ var Book = function () {
       container.appendChild(box);
       bookWrapper.appendChild(style);
       bookWrapper.appendChild(container);
+
+      bookWrapper.draggable = true;
       return bookWrapper;
     }
   }, {

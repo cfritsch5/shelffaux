@@ -19,11 +19,47 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function shelvebooks(){
       for(let i = 0; i < books.length ; i++){
         shelf.appendChild(books[i].html);
-        books[i].html.addEventListener('mousemove',browse,false);
+        books[i].html.addEventListener('click',toggleBrowse);
+        // books[i].html.addEventListener('mousemove',browse,false);
+        // books[i].html.ondragstart = dragStart;
+        // books[i].html.ondrag = browse;
+      }
+    }
+
+    function toggleBrowse(e){
+        let title = e.currentTarget.classList[1];
+        let obj = findBookObject(title);
+        
+      if(obj.clicked){
+        obj.html.removeEventListener('mousemove',browse,false);
+        obj.clicked = false;
+      } else {
+        obj.html.addEventListener('mousemove',browse,false);
+        obj.clicked = true;
+      }
+    }
+
+    //
+    // function dragStart(e){
+    //   // e.preventDefault();
+    //   let blank  = new Image;
+    //   e.dataTransfer.setDragImage(blank,0,0);
+    //   let title = e.currentTarget.classList[1];
+    //   let obj = findBookObject(title);
+    //   // console.log(obj);
+    //   // console.log(e);
+    // }
+
+    function findBookObject(title){
+      for(let i = 0; i < books.length; i++){
+        if(books[i].title == title){
+          return books[i];
+        }
       }
     }
 
     function browse(e){
+      console.log('browse',e.clientX);
       let last = e.currentTarget.style.transform;
       let re = /\((.*?)\)/;
       let m = last.match(re);

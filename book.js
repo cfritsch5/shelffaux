@@ -2,6 +2,7 @@ class Book {
   constructor(bookObj){
     this.book = bookObj;
     this.shortcode();
+    this.clicked = false;
     this.html = this.createHtmlObject();
   }
 
@@ -55,6 +56,8 @@ class Book {
     container.appendChild(box);
     bookWrapper.appendChild(style);
     bookWrapper.appendChild(container);
+
+    bookWrapper.draggable = true;
     return bookWrapper;
   }
 
