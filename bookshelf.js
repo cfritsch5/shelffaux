@@ -4,6 +4,8 @@ import Books from './books';
 document.addEventListener("DOMContentLoaded", function(event) {
   var shelf = document.getElementById('shelf');
   var books = addBooks();
+  var targetBookDiv = null;
+  var targetBookObject = null;
   shelvebooks();
 
     function addBooks(){
@@ -23,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // console.log(rect);
         // click on particular book then mouseover to turn only that book
         books[i].html.addEventListener('click',toggleBrowse);
+        books[i].html.addEventListener('touchstart',toggleBrowse);
 
         // simple mouseover shelf turn all books as they are moused over
         // books[i].html.addEventListener('mousemove',browse,false);
@@ -36,6 +39,85 @@ document.addEventListener("DOMContentLoaded", function(event) {
       }
     }
 
+
+    function toggleBrowse(e){
+      // console.log(e.currentTarget);
+      targetBookDiv = e.currentTarget;
+      let title = targetBookDiv.classList[1];
+      targetBookObject = findBookObject(title);
+
+      if(targetBookObject.clicked){
+        shelf.removeEventListener('mousemove',browse,false);
+        targetBookObject.clicked = false;
+      } else {
+        shelf.addEventListener('mousemove',browse,false);
+        targetBookObject.clicked = true;
+      }
+
+    }
+
+    function browse(_e){
+      // console.log(_e);
+      // let title = e.currentTarget.classList[1];
+      // let bookObj = findBookObject(title);
+      let newAngle = _e.movementX/2 + targetBookObject.angle;
+      if(newAngle >= 0){targetBookDiv.style['transform-origin'] = 'right';}
+      if(newAngle < 0){targetBookDiv.style['transform-origin'] = 'left';}
+      if(newAngle > 45){newAngle = 45;}
+      if(newAngle < -45){newAngle = -45;}
+      targetBookObject.angle = newAngle;
+      targetBookDiv.style.transform = `rotateY(${targetBookObject.angle}deg)`;
+      // console.log(targetBookDiv,_e.movementX);
+      updateAngles(targetBookObject,_e.movementX);
+    }
+
+
+    function dragStart(e){
+      let blank  = new Image;
+      e.dataTransfer.setDragImage(blank,0,0);
+      let title = e.currentTarget.classList[1];
+      let obj = findBookObject(title);
+      browse(e);
+    }
+
+    function findBookObject(title){
+      for(let i = 0; i < books.length; i++){
+        if(books[i].title === title){
+          return books[i];
+        }
+      }
+    }
+
+    function updateAngles(bookObj, movementX){
+      let width = 50;
+      let budgeUp = 0;
+      if(movementX > 0){
+        for(let i = 0 ; i < books.length; i++){
+          if(books[i].x > bookObj.x && books[i].angle < books[i-1].angle){
+            books[i].angle = books[i-1].angle;
+            budgeUp = 2 * (width/Math.cos((books[i].angle*3.14)/180)-width) + budgeUp;
+            updateOrigin(books[i]);
+            books[i].html.style.transform = `translateX(${budgeUp}px) rotateY(${bookObj.angle}deg)`;
+          }
+        }
+      } else {
+        // movement < 0
+        for(let i = books.length-1 ; i >= 0; i--){
+          if(books[i].x < bookObj.x && books[i].angle > books[i+1].angle){
+            books[i].angle = books[i+1].angle;
+            budgeUp = 2 * (width/Math.cos((books[i].angle*3.14)/180)-width) + budgeUp;
+            updateOrigin(books[i]);
+            books[i].html.style.transform = `translateX(-${budgeUp}px) rotateY(${bookObj.angle}deg)`;
+          }
+        }
+      }
+    }
+
+    function updateOrigin(booksi){
+      if(booksi.angle >= 0){booksi.html.style['transform-origin'] = 'right';}
+      if(booksi.angle < 0){booksi.html.style['transform-origin'] = 'left';}
+    }
+
     function doubleClickForward(e) {
       console.log('dblclick');
       let elem = e.currentTarget;
@@ -47,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       // to translate - then rotate --> could use time out but seems like better practice to
       // use animations
       // setTimeout(function(){
-        elem.style.transform = 'translateZ(250px)';
+      elem.style.transform = 'translateZ(250px)';
       // },1000);
       setTimeout(function(){
         elem.style.transform = 'translateZ(250px) translateX(150px) rotateY(-90deg)';
@@ -71,77 +153,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.removeEventListener('click',clickOncetoPutBack);
       });
     }
-
-    function toggleBrowse(e){
-        let title = e.currentTarget.classList[1];
-        let obj = findBookObject(title);
-
-      if(obj.clicked){
-        obj.html.removeEventListener('mousemove',browse,false);
-        obj.clicked = false;
-      } else {
-        obj.html.addEventListener('mousemove',browse,false);
-        obj.clicked = true;
-      }
-    }
-
-
-    function dragStart(e){
-      let blank  = new Image;
-      e.dataTransfer.setDragImage(blank,0,0);
-      let title = e.currentTarget.classList[1];
-      let obj = findBookObject(title);
-      browse(e);
-    }
-
-    function findBookObject(title){
-      for(let i = 0; i < books.length; i++){
-        if(books[i].title === title){
-          return books[i];
-        }
-      }
-    }
-
-    function browse(e){
-      let title = e.currentTarget.classList[1];
-      let bookObj = findBookObject(title);
-      // console.log(Math.asin(e.movementX/100), e.movementX, bookObj.angle);
-      bookObj.angle = e.movementX/2 + bookObj.angle;
-      e.currentTarget.style.transform = `rotateY(${bookObj.angle}deg)`;
-      updateAngles(bookObj,e.movementX);
-    }
-
-    function updateAngles(bookObj, movementX){
-      console.log(movementX);
-      let self = bookObj.x;
-      if(movementX > 0){
-        for(let i = 0 ; i < books.length; i++){
-          // console.log(books[i].x);
-          if(books[i].x > bookObj.x && books[i].angle < books[i-1].angle){
-            console.log('angle',books[i].angle);
-            books[i].angle = books[i-1].angle;
-            // books[i].html.style.border ='3px solid blue';
-            books[i].html.style.transform = `rotateY(${bookObj.angle}deg)`;
-          }
-        }
-      } else {
-        // movement < 0
-        for(let i = 0 ; i < books.length; i++){
-          // console.log(books[i].x);
-          if(books[i].x < bookObj.x && books[i].angle > books[i+1].angle){
-            console.log('angle',books[i].angle);
-            books[i].angle = books[i+1].angle;
-            // books[i].html.style.border ='3px solid blue';
-            books[i].html.style.transform = `rotateY(${bookObj.angle}deg)`;
-          }
-        }
-      }
-      // for(let i = 0; i < books.length; i++){
-      //   books[i].angle = bookObj.angle;
-      //   books[i].html.style.transform = `rotateY(${bookObj.angle}deg)`;
-      // }
-    }
-
     // function setButtonDisabled(btnClass){
     //   let btn = document.getElementById(btnClass);
     //   btn.className = "disabled";
