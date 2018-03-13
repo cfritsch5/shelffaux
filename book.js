@@ -3,9 +3,13 @@ class Book {
     this.book = bookObj;
     this.shortcode();
     this.clicked = false;
-    this.html = this.createHtmlObject();
     this.angle = 0;
-    this.x = 0;
+    this.transX = 0;
+    this.transZ = 0;
+    this.width = 30;
+    this.height = 300;
+    this.depth = 200;
+    this.html = this.createHtmlObject();
   }
 
   shortcode(){
@@ -28,6 +32,15 @@ class Book {
   </div>
 </div>
 */
+
+  updateTransformation(transferArr){
+    // [{form: 'translateX', value: '50px'}]
+    let str = '';
+    for(let i = 0; i < transferArr.length; i++){
+      str = str + " " + transferArr[i].form + " " + transferArr[i].value;
+    }
+    this.html.style.transform = str;
+  }
 
   createHtmlObject(){
 
@@ -64,9 +77,9 @@ class Book {
   }
 
   genStyle(){
-    let width = 50;
-    let height = 300;
-    let depth = 200;
+    let depth = this.depth;
+    let width = this.width;
+    let height = this.height;
     let title = this.title;
     let style = document.createElement('style');
     style.scoped = 'scoped';

@@ -107,10 +107,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
       // console.log(rect);
       // click on particular book then mouseover to turn only that book
       books[i].html.addEventListener('click', toggleBrowse);
-      books[i].html.addEventListener('touchstart', toggleBrowse);
+      // books[i].html.addEventListener('touchstart',toggleBrowse);
 
       // simple mouseover shelf turn all books as they are moused over
-      // books[i].html.addEventListener('mousemove',browse,false);
+      // works but interferes w/ regular togglebrowse
+      // books[i].html.addEventListener('mousemove',toggleBrowseShelf,false);
 
       // still working on this one, but click on book and drag to turn it
       // books[i].html.ondragstart = dragStart;
@@ -121,25 +122,53 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 
+  function toggleBrowseShelf(e) {
+    // current issue is that if the event listener for this is on I want it
+    // to be deselected / turned off when turning by individually selected book
+    // w/ toggle browse
+
+    targetBookDiv = e.currentTarget;
+    var title = targetBookDiv.classList[1];
+    targetBookObject = findBookObject(title);
+    var move = e.movementX > 0 ? e.movementX : e.movementX * -1;
+    var newAngle = targetBookObject.angle - e.movementX / 2;
+    if (newAngle >= 0) {
+      targetBookDiv.style['transform-origin'] = 'right';
+    }
+    if (newAngle < 0) {
+      targetBookDiv.style['transform-origin'] = 'left';
+    }
+    if (newAngle > 45) {
+      newAngle = 45;
+    }
+    if (newAngle < -45) {
+      newAngle = -45;
+    }
+    targetBookObject.angle = newAngle;
+    targetBookDiv.style.transform = 'rotateY(' + targetBookObject.angle + 'deg)';
+    updateAngles(targetBookObject, e.movementX);
+  }
+
   function toggleBrowse(e) {
-    // console.log(e.currentTarget);
     targetBookDiv = e.currentTarget;
     var title = targetBookDiv.classList[1];
     targetBookObject = findBookObject(title);
 
     if (targetBookObject.clicked) {
       shelf.removeEventListener('mousemove', browse, false);
+      // targetBookObject.html.addEventListener('mousemove',toggleBrowseShelf,false);
+
       targetBookObject.clicked = false;
     } else {
       shelf.addEventListener('mousemove', browse, false);
+      // targetBookObject.html.removeEventListener('mousemove',toggleBrowseShelf,false);
+
       targetBookObject.clicked = true;
     }
   }
 
   function browse(_e) {
-    // console.log(_e);
-    // let title = e.currentTarget.classList[1];
-    // let bookObj = findBookObject(title);
+
     var newAngle = _e.movementX / 2 + targetBookObject.angle;
     if (newAngle >= 0) {
       targetBookDiv.style['transform-origin'] = 'right';
@@ -176,14 +205,28 @@ document.addEventListener("DOMContentLoaded", function (event) {
   }
 
   function updateAngles(bookObj, movementX) {
-    var width = 50;
+    var width = bookObj.width;
+    // let width = 50;
     var budgeUp = 0;
+    // let testIdea = (width/Math.cos((bookObj.angle*3.14)/180)-width) + budgeUp;
+
+    function updatePosition(booksi) {
+      if (booksi.angle >= 0) {
+        booksi.html.style['transform-origin'] = 'right';
+      }
+      if (booksi.angle < 0) {
+        booksi.html.style['transform-origin'] = 'left';
+      }
+      budgeUp = width / Math.cos(booksi.angle * 3.14 / 180) - width + budgeUp;
+      booksi.transX = budgeUp;
+    }
+
     if (movementX > 0) {
       for (var i = 0; i < books.length; i++) {
+        // console.log(books[i].title, (width/Math.cos((books[i].angle*3.14)/180)-width), books[i].transX, bookObj.transX);
         if (books[i].x > bookObj.x && books[i].angle < books[i - 1].angle) {
           books[i].angle = books[i - 1].angle;
-          budgeUp = 2 * (width / Math.cos(books[i].angle * 3.14 / 180) - width) + budgeUp;
-          updateOrigin(books[i]);
+          updatePosition(books[i]);
           books[i].html.style.transform = 'translateX(' + budgeUp + 'px) rotateY(' + bookObj.angle + 'deg)';
         }
       }
@@ -192,20 +235,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
       for (var _i = books.length - 1; _i >= 0; _i--) {
         if (books[_i].x < bookObj.x && books[_i].angle > books[_i + 1].angle) {
           books[_i].angle = books[_i + 1].angle;
-          budgeUp = 2 * (width / Math.cos(books[_i].angle * 3.14 / 180) - width) + budgeUp;
-          updateOrigin(books[_i]);
+          updatePosition(books[_i]);
           books[_i].html.style.transform = 'translateX(-' + budgeUp + 'px) rotateY(' + bookObj.angle + 'deg)';
         }
       }
-    }
-  }
-
-  function updateOrigin(booksi) {
-    if (booksi.angle >= 0) {
-      booksi.html.style['transform-origin'] = 'right';
-    }
-    if (booksi.angle < 0) {
-      booksi.html.style['transform-origin'] = 'left';
     }
   }
 
@@ -294,9 +327,13 @@ var Book = function () {
     this.book = bookObj;
     this.shortcode();
     this.clicked = false;
-    this.html = this.createHtmlObject();
     this.angle = 0;
-    this.x = 0;
+    this.transX = 0;
+    this.transZ = 0;
+    this.width = 30;
+    this.height = 300;
+    this.depth = 200;
+    this.html = this.createHtmlObject();
   }
 
   _createClass(Book, [{
@@ -322,6 +359,16 @@ var Book = function () {
     </div>
     */
 
+  }, {
+    key: 'updateTransformation',
+    value: function updateTransformation(transferArr) {
+      // [{form: 'translateX', value: '50px'}]
+      var str = '';
+      for (var i = 0; i < transferArr.length; i++) {
+        str = str + " " + transferArr[i].form + " " + transferArr[i].value;
+      }
+      this.html.style.transform = str;
+    }
   }, {
     key: 'createHtmlObject',
     value: function createHtmlObject() {
@@ -360,9 +407,9 @@ var Book = function () {
   }, {
     key: 'genStyle',
     value: function genStyle() {
-      var width = 50;
-      var height = 300;
-      var depth = 200;
+      var depth = this.depth;
+      var width = this.width;
+      var height = this.height;
       var title = this.title;
       var style = document.createElement('style');
       style.scoped = 'scoped';
