@@ -21,23 +21,31 @@ t   |___|/ d
 */
 .bookshelf {
   perspective: 1000px;
-  margin-left: 200px;
+  width: 100%;
 }
 
 .shelf {
   transform-style: preserve-3d;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: flex-end;
   /*temp style useful in development*/
-      transform: rotateX(-30deg);
+  transform: rotateX(0deg);
+  transform: rotateX(-30deg);
+  /* transform: rotateX(-90deg); */
+  padding-top: 50px;
+  padding-left: 200px;
+  padding-right: 200px;
+  width: 100vw;
+  height: 60vh;
 }
 
 .book {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
   transform-style: preserve-3d;
+  /* position: absolute; */
 }
 
 .container {

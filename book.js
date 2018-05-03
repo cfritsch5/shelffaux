@@ -1,23 +1,38 @@
 class Book {
   constructor(bookObj){
     this.book = bookObj;
-    this.shortcode();
+    this.title = this.shortcode();
     this.clicked = false;
     this.angle = 0;
-    this.transX = 0;
-    this.transZ = 0;
-    this.width = 30;
-    this.height = 300;
-    this.depth = 200;
+    this.transforms = {rX: 0, rY: 0, rZ: 0, tX: 0, tY: 0, tZ: 0};
+
+    // dimensions will eventuaalyy be pulled from the book object but all the same for now
+    console.log(this);
+    this.width = 50*this.book.width;
+    // this.width = 30;
+    this.height = 50*this.book.height;
+    this.depth = 40*this.book.depth;
+
     this.html = this.createHtmlObject();
   }
 
+    // top view
+    // 0,0 -----------> x
+    //    |  A _____ B
+    //    |   |     |  d
+    //    |   |     |  e
+    //    |   |width|  p
+    //    |   |<--->|  t
+    //    |   |     |  h
+    //    y  C|_____|D
+
   shortcode(){
   // - todo later - make shortcode util that will ensure uniqeness
+  // - or have a hardcoded unique ID
   let title = this.book.title;
   title = title.replace(/the|of|and|in|to|on|by/gi, '');
   title = title.match(/\b\w/gi).join("");
-  this.title = title;
+  return title;
 }
 
 /*
@@ -33,13 +48,26 @@ class Book {
 </div>
 */
 
-  updateTransformation(transferArr){
-    // [{form: 'translateX', value: '50px'}]
-    let str = '';
-    for(let i = 0; i < transferArr.length; i++){
-      str = str + " " + transferArr[i].form + " " + transferArr[i].value;
+  updateTransformation(transforms){
+    this.transforms = Object.assign({},this.transforms, transforms);
+    console.log(this.title, this.transforms, transforms);
+    this.angle = this.transforms.rY;
+    // this.transforms.tX = this.transforms.tX + transforms.tX;
+    //transforms = {rX:50, rY:0}
+    let side = this.angle < 0 ? 'left' : 'right';
+    this.updateOrigin(side);
+
+    this.html.style.transform = `
+    translateX(${this.transforms.tX}px)
+    translateZ(${this.transforms.tZ})
+    rotateY(${this.transforms.rY}deg)
+    `;
+  }
+
+  updateOrigin(side){
+    if (side === 'left' || side === 'right'){
+      this.html.style['transform-origin'] = side;
     }
-    this.html.style.transform = str;
   }
 
   createHtmlObject(){
@@ -48,26 +76,29 @@ class Book {
     let bookWrapper = document.createElement('div');
     let container = document.createElement('div');
     let box = document.createElement('div');
-    let cover = document.createElement('figure');
-    let back = document.createElement('figure');
+    let right = document.createElement('figure');
+    let left = document.createElement('figure');
     let spine = document.createElement('figure');
     let top = document.createElement('figure');
     let bottom = document.createElement('figure');
+    let back = document.createElement('figure');
 
     bookWrapper.classList.add('book', this.title);
     container.classList.add('container', `${this.title}container`);
     box.classList.add('box', `${this.title}-box`);
-    cover.classList.add('right','side');
-    back.classList.add('left','side');
-    spine.classList.add('front','side');
-    top.classList.add('top','side');
-    bottom.classList.add('bottom','side');
+    right.classList.add(`${this.title}-side`, 'right','side');
+    left.classList.add(`${this.title}-side`, 'left','side');
+    spine.classList.add(`${this.title}-side`, 'front','side');
+    top.classList.add(`${this.title}-side`, 'top','side');
+    bottom.classList.add(`${this.title}-side`, 'bottom','side');
+    back.classList.add(`${this.title}-side`, 'back','side');
 
     box.appendChild(top);
-    box.appendChild(back);
-    box.appendChild(cover);
+    box.appendChild(left);
+    box.appendChild(right);
     box.appendChild(spine);
     box.appendChild(bottom);
+    box.appendChild(back);
     container.appendChild(box);
     bookWrapper.appendChild(style);
     bookWrapper.appendChild(container);
