@@ -1,3 +1,5 @@
+import Vector from './vector';
+
 class Book {
   constructor(bookObj){
     this.book = bookObj;
@@ -6,14 +8,17 @@ class Book {
     this.angle = 0;
     this.transforms = {rX: 0, rY: 0, rZ: 0, tX: 0, tY: 0, tZ: 0};
 
-    // dimensions will eventuaalyy be pulled from the book object but all the same for now
-    console.log(this);
-    this.width = 50*this.book.width;
-    // this.width = 30;
-    this.height = 50*this.book.height;
+    this.width = 40*this.book.width;
+    this.height = 40*this.book.height;
     this.depth = 40*this.book.depth;
+    this.diagonal = Math.sqrt(Math.pow(this.width,2)+Math.pow(this.depth,2));
+    this.phi=Math.asin(this.width/this.diagonal);//is in radians
 
     this.html = this.createHtmlObject();
+
+    // this.vector = new Vector(1,2);
+    // this.x = 0;
+    // this.y = this.depth/2;
   }
 
     // top view
@@ -50,7 +55,7 @@ class Book {
 
   updateTransformation(transforms){
     this.transforms = Object.assign({},this.transforms, transforms);
-    console.log(this.title, this.transforms, transforms);
+    // console.log(this.title, this.transforms, transforms);
     this.angle = this.transforms.rY;
     // this.transforms.tX = this.transforms.tX + transforms.tX;
     //transforms = {rX:50, rY:0}

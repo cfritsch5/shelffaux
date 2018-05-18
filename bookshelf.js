@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   var books = addBooks();
   var targetBookDiv = null;
   var targetBookObject = null;
+  var inTopx = 40;
   shelvebooks();
   const ToRad = 3.14/180;
 
@@ -20,47 +21,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function shelvebooks(){
-      let pos = 100;
+      let pos = 0;
       for(let i = 0; i < books.length ; i++){
+        books[i].i = i;
         books[i].x = pos;
-        shelf.appendChild(books[i].html);
-        // books[i].html.style.left = `${pos}px`;
-        // books[i].updateTransformation({tX:pos});
         pos = pos + books[i].width;
-
+        console.log(books[i]);
+        window[books[i].title] = books[i];
+        window.books = books;
+        shelf.appendChild(books[i].html);
         // click on particular book then mouseover to turn only that book
         books[i].html.addEventListener('click',toggleBrowse);
         // books[i].html.addEventListener('touchstart',toggleBrowse);
-
-        // simple mouseover shelf turn all books as they are moused over
-        // works but interferes w/ regular togglebrowse
-        // books[i].html.addEventListener('mousemove',toggleBrowseShelf,false);
-
-        // still working on this one, but click on book and drag to turn it
-        // books[i].html.ondragstart = dragStart;
-        // books[i].html.ondrag = browse;
-
       }
     }
-
-    // function toggleBrowseShelf(e){
-    //   // current issue is that if the event listener for this is on I want it
-    //   // to be deselected / turned off when turning by individually selected book
-    //   // w/ toggle browse
-    //   targetBookDiv = e.currentTarget;
-    //   let title = targetBookDiv.classList[1];
-    //   targetBookObject = findBookObject(title);
-    //   let move = e.movementX > 0 ? e.movementX : e.movementX * -1;
-    //   let newAngle = (targetBookObject.angle - e.movementX/2);
-    //   if(newAngle >= 0){targetBookDiv.style['transform-origin'] = 'right';}
-    //   if(newAngle < 0){targetBookDiv.style['transform-origin'] = 'left';}
-    //   if(newAngle > 45){newAngle = 45;}
-    //   if(newAngle < -45){newAngle = -45;}
-    //   targetBookObject.angle = newAngle;
-    //   targetBookDiv.style.transform = `rotateY(${targetBookObject.angle}deg)`;
-    //   updateAngles(targetBookObject,e.movementX);
-    // }
-
 
     function toggleBrowse(e){
       targetBookDiv = e.currentTarget;
@@ -76,12 +50,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     function browse(_e){
-
-      let newAngle = _e.movementX/4 + targetBookObject.angle;
+      // let newAngle = _e.movementX/4 + targetBookObject.angle;
+      let newAngle = Math.asin(_e.movementX/targetBookObject.depth)*(180/Math.PI) + targetBookObject.angle;
       if(newAngle > 90){newAngle = 90;}
       if(newAngle < -90){newAngle = -90;}
       targetBookObject.updateTransformation({rY:newAngle});
-      // updateAngles(targetBookObject,_e.movementX);
+      pushBooks(targetBookObject);
     }
 
     function findBookObject(title){
@@ -92,8 +66,113 @@ document.addEventListener("DOMContentLoaded", function(event) {
       }
     }
 
-    function SAT(bookObj,movementX){
+    // function updateAngles(bookObj,movementX){
+    //   let direction = movementX > 0 ? 'pos' : 'neg';
+    //   // direction === 'pos' ? updateForwardAngels() : updateBackwardAngles();
+    //   for (let i = bookObj.i; i<books.length ; i++) {
+    //     // going forward
+    //
+    //     books[i].updateTransformation({rY:bookObj.angle});
+    //     pushBooks(books[i], books[i+1]);
+    //   }
+    // }
 
+    function pushBooks(bookObj){
+      let book1 = getRefBook(bookObj);
+      let axies;
+      let book2 = null;
+      for( let i = bookObj.i+1; i < books.length ; i++){
+        book2 = getRefBook(books[i]);
+        axies = [book1.p, book1.q, book2.p, book2.q];
+        let gap = false;
+        for(let j = 0; j < axies.length; j++){
+          let b1 = transformIntoPsAndQs(axies[j], book1.points);
+          let b2 = transformIntoPsAndQs(axies[j], book2.points);
+          // console.log(book1.points);
+          // console.log(book2.points);
+          // console.log(b1,b2);
+          let min1 = Math.min(...b1);
+          let max1 = Math.max(...b1);
+          let min2 = Math.min(...b2);
+          let max2 = Math.max(...b2);
+          if(min2 > max1 || min1 > max2){
+            gap = true;
+            break;
+          }
+        }
+        if(gap){
+          console.log("GAP between", bookObj.title, "and", books[i].title);
+        } else {
+          console.log("overlapping", bookObj.title, "and", books[i].title);
+        }
+        gap = false;
+        book1 = book2;
+      }
+    }
+
+    function transformIntoPsAndQs(unitVec, points){
+      // console.log(points, 'unitvec:',unitVec);
+      let a = points.ax*unitVec.x + points.ay*unitVec.y;
+      // let aq = points.ax*q.x + points.ay*q.y;
+      let b = points.bx*unitVec.x + points.by*unitVec.y;
+      // let bq = points.bx*q.x + points.by*q.y;
+      let c = points.cx*unitVec.x + points.cy*unitVec.y;
+      // let cq = points.cx*q.x + points.cy*q.y;
+      let d = points.dx*unitVec.x + points.dy*unitVec.y;
+      // let dq = points.dx*q.x + points.dy*q.y;
+      // console.log(a,b,c,d);
+      return [a, b, c, d];
+    }
+
+    function getRefBook(bookObj){
+      let points = getPoints(bookObj);
+      // console.log(bookObj.title, 'points', points);
+      let {p,q} = getUnitVectors(bookObj);
+      return {points, p, q};
+    }
+
+    function getUnitVectors(bookObj){
+      let angle = inRadians(bookObj.angle), p = {}, q = {};
+
+      p.x = bookObj.width*Math.cos(angle+Math.PI/2)/bookObj.width;
+      p.y = bookObj.width*Math.sin(angle+Math.PI/2)/bookObj.width;
+      q.x = bookObj.depth*Math.cos(angle)/bookObj.depth;
+      q.y = bookObj.depth*Math.sin(angle)/bookObj.depth;
+      // console.log(p,q);
+      return {p, q};
+    }
+
+    function getPoints(bookObj){
+      let ax = 'noped',ay = 'noped',bx = 'noped',by = 'noped',cx = 'noped',cy = 'noped',dx = 'noped',dy = 'noped';
+      let {phi, x, width, depth, diagonal, angle} = bookObj;
+
+      angle = inRadians(angle);
+
+      if(angle >= 0){
+        bx = x + width;
+        by = 0;
+        ax = bx - width*Math.cos(angle);
+        ay = width*Math.sin(angle);
+        cx = bx + depth*Math.sin(angle);
+        cy = depth*Math.cos(angle);
+        dx = bx + diagonal*Math.sin(angle - phi);
+        dy = Math.abs(diagonal*Math.cos(phi+angle));
+      } else {
+        // ax = x;
+        // ay = 0;
+        // bx = x + width*Math.cos(angle);
+        // by = width*Math.sin(angle);
+        // cx = bx + depth*Math.sin(angle);
+        // cy = depth*Math.cos(angle);
+        // dx = bx - diagonal*Math.sin(phi+angle);
+        // dy = Math.abs(diagonal*Math.cos(phi+angle));
+      }
+
+      return {ax,ay,bx,by,cx,cy,dx,dy};
+    }
+
+    function inRadians(theta){
+      return theta*ToRad;
     }
 
 
@@ -133,72 +212,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
     //     }
     //   }
     // }
-
-
-        // function dragStart(e){
-        //   let blank  = new Image;
-        //   e.dataTransfer.setDragImage(blank,0,0);
-        //   let title = e.currentTarget.classList[1];
-        //   let obj = findBookObject(title);
-        //   browse(e);
-        // }
-
-    //
-    // double click to move forward
-    // add following line to shelvebooks to work
-    // books[i].html.addEventListener('dblclick',doubleClickForward);
-
-    // function doubleClickForward(e) {
-
-
-    //   console.log('dblclick');
-    //   let elem = e.currentTarget;
-    //   elem.style['transition-timing-function'] = 'ease-in-out';
-    //   elem.style['transition-duration'] = '1s';
-    //   // let b = elem.style.transform = 'translateZ(250px)';
-    //   // elem.style.transform = 'translateZ(250px) rotateY(90deg)';
-    //   // going to need something to manage the animation - possibly use css animations
-    //   // to translate - then rotate --> could use time out but seems like better practice to
-    //   // use animations
-    //   // setTimeout(function(){
-    //   elem.style.transform = 'translateZ(250px)';
-    //   // },1000);
-    //   setTimeout(function(){
-    //     elem.style.transform = 'translateZ(250px) translateX(150px) rotateY(-90deg)';
-    //     // elem.style['transition-duration'] = '2s';
-    //   },900);
-    //   // currently rotate from browse and translate from here overwrite eachother
-    //   // may have to later do some sort of adding of transformations
-    //   // console.log(b);
-    //   elem.style['pointer-events'] = 'none';
-    //   document.addEventListener('click',function clickOncetoPutBack(){
-    //     // put back on click
-    //     elem.style.transform = 'translateX(0px) rotateY(0deg)translateZ(250px)';
-    //     setTimeout(function(){
-    //       elem.style.transform = 'translateZ(0px)';
-    //       // elem.style['transition-duration'] = '2s';
-    //       elem.style['pointer-events'] = 'inherit';
-    //       setTimeout(function(){
-    //         elem.style['transition-duration'] = '0s';
-    //       },900);
-    //     },900);
-    //     document.removeEventListener('click',clickOncetoPutBack);
-    //   });
-    // }
-    // function setButtonDisabled(btnClass){
-    //   let btn = document.getElementById(btnClass);
-    //   btn.className = "disabled";
-    //   btn.disabled = true;
-    // }
-    //
-    // function enableButton(btnClass){
-    //   let btn = document.getElementById(btnClass);
-    //   btn.className = "enabled";
-    //   btn.disabled = false;
-    // }
-
-    // document.addEventListener('keydown', function(e) {
-    //   shelf.classList.toggle('no-clicky');
-    //   console.log('keydown');
-    // });
 });
