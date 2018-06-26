@@ -25,8 +25,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
       for(let i = 0; i < books.length ; i++){
         books[i].i = i;
         books[i].x = pos;
-        pos = pos + books[i].width;
-        console.log(books[i]);
+        pos = pos + books[i].width + 1;
+        // console.log(books[i]);
         window[books[i].title] = books[i];
         window.books = books;
         shelf.appendChild(books[i].html);
@@ -79,26 +79,30 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     function pushBooks(bookObj){
       // console.log(bookObj);
+      let book1 = bookObj;
+      let book2 = null;
       let book1Points = getBookCoords(bookObj);
       let axies, gap = false;
       let book2Points = null;
 
       if(bookObj.angle > 0 ){
         for( let i = bookObj.i+1; i < books.length ; i++){
-          book2Points = getBookCoords(books[i]);
+          book2 = books[i];
+          book2Points = getBookCoords(book2);
           axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
           gap = minMaxOverlap(axies, book1Points, book2Points);
 
           if(gap){
-            console.log("GAP between", bookObj.title, "and", books[i].title);
+            // console.log("GAP between", bookObj.title, "and", books[i].title);
           } else {
-            console.log("overlapping", bookObj.title, "and", books[i].title);
+            console.log("overlapping", book1.title, "and", book2.title);
             // console.log('book1Points',book1Points);
             // console.log('book2Points',book2Points);
 
             // update book 2 transfornation based on
           }
           gap = false;
+          book1 = book2;
           book1Points = book2Points;
         }
 
