@@ -166,36 +166,60 @@ document.addEventListener("DOMContentLoaded", function (event) {
   // }
 
   function pushBooks(bookObj) {
-    var book1 = getRefBook(bookObj);
-    var axies = void 0;
-    var book2 = null;
-    for (var i = bookObj.i + 1; i < books.length; i++) {
-      book2 = getRefBook(books[i]);
-      axies = [book1.p, book1.q, book2.p, book2.q];
-      var gap = false;
-      for (var j = 0; j < axies.length; j++) {
-        var b1 = transformIntoPsAndQs(axies[j], book1.points);
-        var b2 = transformIntoPsAndQs(axies[j], book2.points);
-        // console.log(book1.points);
-        // console.log(book2.points);
-        // console.log(b1,b2);
-        var min1 = Math.min.apply(Math, _toConsumableArray(b1));
-        var max1 = Math.max.apply(Math, _toConsumableArray(b1));
-        var min2 = Math.min.apply(Math, _toConsumableArray(b2));
-        var max2 = Math.max.apply(Math, _toConsumableArray(b2));
-        if (min2 > max1 || min1 > max2) {
-          gap = true;
-          break;
+    console.log(bookObj);
+    var book1Points = getBookCoords(bookObj);
+    // console.log(book1Points);
+    var axies = void 0,
+        gap = false;
+    var book2Points = null;
+
+    if (bookObj.angle > 0) {
+      for (var i = bookObj.i + 1; i < books.length; i++) {
+        book2Points = getBookCoords(books[i]);
+        axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
+        gap = minMaxOverlap(axies, book1Points, book2Points);
+
+        if (gap) {
+          console.log("GAP between", bookObj.title, "and", books[i].title);
+        } else {
+          console.log("overlapping", bookObj.title, "and", books[i].title);
+          // update book 2 transfornation based on 
         }
+        gap = false;
+        book1Points = book2Points;
       }
-      if (gap) {
-        console.log("GAP between", bookObj.title, "and", books[i].title);
-      } else {
-        console.log("overlapping", bookObj.title, "and", books[i].title);
-      }
-      gap = false;
-      book1 = book2;
+
+      // } else {
+      //   for( let i = bookObj.i-1; i >= 0 ; i--){
+      //     console.log("try???");
+      //     book2 = getBookCoords(books[i]);
+      //     axies = [book1.p, book1.q, book2.p, book2.q];
+      //     gap = minMaxOverlap(axies, book1, book2);
+      //
+      //     if(gap){
+      //       console.log("GAP between", books[i].title);
+      //     } else {
+      //       console.log("overlapping", books[i].title);
+      //     }
+      //     gap = false;
+      //     book1 = book2;
+      //   }
     }
+  }
+
+  function minMaxOverlap(axies, book1, book2) {
+    for (var j = 0; j < axies.length; j++) {
+      var b1 = transformIntoPsAndQs(axies[j], book1.points);
+      var b2 = transformIntoPsAndQs(axies[j], book2.points);
+      var min1 = Math.min.apply(Math, _toConsumableArray(b1));
+      var max1 = Math.max.apply(Math, _toConsumableArray(b1));
+      var min2 = Math.min.apply(Math, _toConsumableArray(b2));
+      var max2 = Math.max.apply(Math, _toConsumableArray(b2));
+      if (min2 > max1 || min1 > max2) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function transformIntoPsAndQs(unitVec, points) {
@@ -212,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     return [a, b, c, d];
   }
 
-  function getRefBook(bookObj) {
+  function getBookCoords(bookObj) {
     var points = getPoints(bookObj);
     // console.log(bookObj.title, 'points', points);
 
@@ -265,14 +289,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
       dx = bx + diagonal * Math.sin(angle - phi);
       dy = Math.abs(diagonal * Math.cos(phi + angle));
     } else {
-      // ax = x;
-      // ay = 0;
-      // bx = x + width*Math.cos(angle);
-      // by = width*Math.sin(angle);
-      // cx = bx + depth*Math.sin(angle);
-      // cy = depth*Math.cos(angle);
-      // dx = bx - diagonal*Math.sin(phi+angle);
-      // dy = Math.abs(diagonal*Math.cos(phi+angle));
+      ax = x;
+      ay = 0;
+      bx = x + width * Math.cos(angle);
+      by = -width * Math.sin(angle);
+      cx = x + diagonal * Math.sin(angle + phi);
+      cy = diagonal * Math.cos(angle + phi);
+      dx = -(x - depth * Math.sin(angle));
+      dy = depth * Math.cos(angle);
     }
 
     return { ax: ax, ay: ay, bx: bx, by: by, cx: cx, cy: cy, dx: dx, dy: dy };
