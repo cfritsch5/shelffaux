@@ -166,9 +166,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
   // }
 
   function pushBooks(bookObj) {
-    console.log(bookObj);
+    // console.log(bookObj);
     var book1Points = getBookCoords(bookObj);
-    // console.log(book1Points);
     var axies = void 0,
         gap = false;
     var book2Points = null;
@@ -183,7 +182,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
           console.log("GAP between", bookObj.title, "and", books[i].title);
         } else {
           console.log("overlapping", bookObj.title, "and", books[i].title);
-          // update book 2 transfornation based on 
+          // console.log('book1Points',book1Points);
+          // console.log('book2Points',book2Points);
+
+          // update book 2 transfornation based on
         }
         gap = false;
         book1Points = book2Points;
@@ -215,6 +217,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       var max1 = Math.max.apply(Math, _toConsumableArray(b1));
       var min2 = Math.min.apply(Math, _toConsumableArray(b2));
       var max2 = Math.max.apply(Math, _toConsumableArray(b2));
+      // console.log("minmax",min1,max1,min2,max2);
       if (min2 > max1 || min1 > max2) {
         return true;
       }
@@ -232,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     // let cq = points.cx*q.x + points.cy*q.y;
     var d = points.dx * unitVec.x + points.dy * unitVec.y;
     // let dq = points.dx*q.x + points.dy*q.y;
-    // console.log(a,b,c,d);
+    // console.log("a,b,c,d",{a,b,c,d});
     return [a, b, c, d];
   }
 
@@ -252,11 +255,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
         p = {},
         q = {};
 
-    p.x = bookObj.width * Math.cos(angle + Math.PI / 2) / bookObj.width;
-    p.y = bookObj.width * Math.sin(angle + Math.PI / 2) / bookObj.width;
-    q.x = bookObj.depth * Math.cos(angle) / bookObj.depth;
-    q.y = bookObj.depth * Math.sin(angle) / bookObj.depth;
-    // console.log(p,q);
+    p.x = bookObj.width * Math.sin(angle + Math.PI / 2) / bookObj.width;
+    p.y = bookObj.width * Math.cos(angle + Math.PI / 2) / bookObj.width;
+    q.x = bookObj.depth * Math.sin(angle) / bookObj.depth;
+    q.y = bookObj.depth * Math.cos(angle) / bookObj.depth;
+    // console.log(bookObj.title,p,q);
     return { p: p, q: q };
   }
 
