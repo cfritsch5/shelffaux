@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       for(let i = 0; i < books.length ; i++){
         books[i].i = i;
         books[i].x = pos;
-        pos = pos + books[i].width + 1;
+        pos = pos + books[i].width + 2;
         // console.log(books[i]);
         window[books[i].title] = books[i];
         window.books = books;
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       if(newAngle > 90){newAngle = 90;}
       if(newAngle < -90){newAngle = -90;}
       targetBookObject.updateTransformation({rY:newAngle});
-      pushBooks(targetBookObject);
+      pushBooks(targetBookObject, _e.movementX);
     }
 
     function findBookObject(title){
@@ -77,15 +77,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
     //   }
     // }
 
-    function pushBooks(bookObj){
+    function pushBooks(bookObj, movementX){
       // console.log(bookObj);
+      console.log(movementX);
       let book1 = bookObj;
       let book2 = null;
       let book1Points = getBookCoords(bookObj);
       let axies, gap = false;
       let book2Points = null;
+      let deltaX = 0;
 
-      if(bookObj.angle > 0 ){
+      if(bookObj.angle > 0 && movementX > 0){
         for( let i = bookObj.i+1; i < books.length ; i++){
           book2 = books[i];
           book2Points = getBookCoords(book2);
@@ -93,17 +95,26 @@ document.addEventListener("DOMContentLoaded", function(event) {
           gap = minMaxOverlap(axies, book1Points, book2Points);
 
           if(gap){
-            // console.log("GAP between", bookObj.title, "and", books[i].title);
+            console.log("GAP between", bookObj.title, "and", books[i].title);
+            break;
           } else {
-            console.log("overlapping", book1.title, "and", book2.title);
+            // console.log("overlapping", book1.title, "and", book2.title);
+            book2.angle = book1.angle;
+            book2.updateTransformation({rY: book2.angle});
+            deltaX = book2.width/(Math.cos(ToRad*(book2.angle)))-book2.width*Math.cos(ToRad*book2.angle) + deltaX + 2;
+
+            book2.updateTransformation({tX: deltaX});
             // console.log('book1Points',book1Points);
             // console.log('book2Points',book2Points);
 
             // update book 2 transfornation based on
+            // book2.angle = book1.angle;
+
+            }
+            gap = false;
+            book1 = book2;
+            book1Points = book2Points;
           }
-          gap = false;
-          book1 = book2;
-          book1Points = book2Points;
         }
 
       // } else {
@@ -121,8 +132,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
       //     gap = false;
       //     book1 = book2;
       //   }
-
-      }
 
     }
 

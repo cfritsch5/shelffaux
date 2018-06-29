@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     for (var i = 0; i < books.length; i++) {
       books[i].i = i;
       books[i].x = pos;
-      pos = pos + books[i].width + 1;
+      pos = pos + books[i].width + 2;
       // console.log(books[i]);
       window[books[i].title] = books[i];
       window.books = books;
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       newAngle = -90;
     }
     targetBookObject.updateTransformation({ rY: newAngle });
-    pushBooks(targetBookObject);
+    pushBooks(targetBookObject, _e.movementX);
   }
 
   function findBookObject(title) {
@@ -165,16 +165,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //   }
   // }
 
-  function pushBooks(bookObj) {
+  function pushBooks(bookObj, movementX) {
     // console.log(bookObj);
+    console.log(movementX);
     var book1 = bookObj;
     var book2 = null;
     var book1Points = getBookCoords(bookObj);
     var axies = void 0,
         gap = false;
     var book2Points = null;
+    var deltaX = 0;
 
-    if (bookObj.angle > 0) {
+    if (bookObj.angle > 0 && movementX > 0) {
       for (var i = bookObj.i + 1; i < books.length; i++) {
         book2 = books[i];
         book2Points = getBookCoords(book2);
@@ -182,35 +184,42 @@ document.addEventListener("DOMContentLoaded", function (event) {
         gap = minMaxOverlap(axies, book1Points, book2Points);
 
         if (gap) {
-          // console.log("GAP between", bookObj.title, "and", books[i].title);
+          console.log("GAP between", bookObj.title, "and", books[i].title);
+          break;
         } else {
-          console.log("overlapping", book1.title, "and", book2.title);
+          // console.log("overlapping", book1.title, "and", book2.title);
+          book2.angle = book1.angle;
+          book2.updateTransformation({ rY: book2.angle });
+          deltaX = book2.width / Math.cos(ToRad * book2.angle) - book2.width * Math.cos(ToRad * book2.angle) + deltaX + 2;
+
+          book2.updateTransformation({ tX: deltaX });
           // console.log('book1Points',book1Points);
           // console.log('book2Points',book2Points);
 
           // update book 2 transfornation based on
+          // book2.angle = book1.angle;
         }
         gap = false;
         book1 = book2;
         book1Points = book2Points;
       }
-
-      // } else {
-      //   for( let i = bookObj.i-1; i >= 0 ; i--){
-      //     console.log("try???");
-      //     book2 = getBookCoords(books[i]);
-      //     axies = [book1.p, book1.q, book2.p, book2.q];
-      //     gap = minMaxOverlap(axies, book1, book2);
-      //
-      //     if(gap){
-      //       console.log("GAP between", books[i].title);
-      //     } else {
-      //       console.log("overlapping", books[i].title);
-      //     }
-      //     gap = false;
-      //     book1 = book2;
-      //   }
     }
+
+    // } else {
+    //   for( let i = bookObj.i-1; i >= 0 ; i--){
+    //     console.log("try???");
+    //     book2 = getBookCoords(books[i]);
+    //     axies = [book1.p, book1.q, book2.p, book2.q];
+    //     gap = minMaxOverlap(axies, book1, book2);
+    //
+    //     if(gap){
+    //       console.log("GAP between", books[i].title);
+    //     } else {
+    //       console.log("overlapping", books[i].title);
+    //     }
+    //     gap = false;
+    //     book1 = book2;
+    //   }
   }
 
   function minMaxOverlap(axies, book1, book2) {
