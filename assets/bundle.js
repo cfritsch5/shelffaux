@@ -482,36 +482,23 @@ var Book = function () {
   }, {
     key: 'createHtmlObject',
     value: function createHtmlObject() {
-
-      var style = this.genStyle();
+      var sides = { 'right': null, 'left': null, 'front': null, 'back': null, 'top': null, 'bottom': null };
       var bookWrapper = document.createElement('div');
       var container = document.createElement('div');
       var box = document.createElement('div');
-      var right = document.createElement('figure');
-      var left = document.createElement('figure');
-      var spine = document.createElement('figure');
-      var top = document.createElement('figure');
-      var bottom = document.createElement('figure');
-      var back = document.createElement('figure');
+
+      for (var side in sides) {
+        sides[side] = document.createElement('figure');
+        sides[side].classList.add(this.title + '-side', side, 'side');
+        box.appendChild(sides[side]);
+      }
 
       bookWrapper.classList.add('book', this.title);
       container.classList.add('container', this.title + 'container');
       box.classList.add('box', this.title + '-box');
-      right.classList.add(this.title + '-side', 'right', 'side');
-      left.classList.add(this.title + '-side', 'left', 'side');
-      spine.classList.add(this.title + '-side', 'front', 'side');
-      top.classList.add(this.title + '-side', 'top', 'side');
-      bottom.classList.add(this.title + '-side', 'bottom', 'side');
-      back.classList.add(this.title + '-side', 'back', 'side');
 
-      box.appendChild(top);
-      box.appendChild(left);
-      box.appendChild(right);
-      box.appendChild(spine);
-      box.appendChild(bottom);
-      box.appendChild(back);
       container.appendChild(box);
-      bookWrapper.appendChild(style);
+      bookWrapper.appendChild(this.genStyle());
       bookWrapper.appendChild(container);
 
       bookWrapper.draggable = true;

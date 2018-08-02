@@ -76,36 +76,23 @@ class Book {
   }
 
   createHtmlObject(){
-
-    let style = this.genStyle();
+    let sides = {'right':null, 'left':null, 'front':null, 'back':null, 'top':null, 'bottom':null};
     let bookWrapper = document.createElement('div');
     let container = document.createElement('div');
     let box = document.createElement('div');
-    let right = document.createElement('figure');
-    let left = document.createElement('figure');
-    let spine = document.createElement('figure');
-    let top = document.createElement('figure');
-    let bottom = document.createElement('figure');
-    let back = document.createElement('figure');
+
+    for(let side in sides){
+        sides[side] = document.createElement('figure');
+        sides[side].classList.add(`${this.title}-side`, side,'side');
+        box.appendChild(sides[side]);
+    }
 
     bookWrapper.classList.add('book', this.title);
     container.classList.add('container', `${this.title}container`);
     box.classList.add('box', `${this.title}-box`);
-    right.classList.add(`${this.title}-side`, 'right','side');
-    left.classList.add(`${this.title}-side`, 'left','side');
-    spine.classList.add(`${this.title}-side`, 'front','side');
-    top.classList.add(`${this.title}-side`, 'top','side');
-    bottom.classList.add(`${this.title}-side`, 'bottom','side');
-    back.classList.add(`${this.title}-side`, 'back','side');
 
-    box.appendChild(top);
-    box.appendChild(left);
-    box.appendChild(right);
-    box.appendChild(spine);
-    box.appendChild(bottom);
-    box.appendChild(back);
     container.appendChild(box);
-    bookWrapper.appendChild(style);
+    bookWrapper.appendChild(this.genStyle());
     bookWrapper.appendChild(container);
 
     bookWrapper.draggable = true;
