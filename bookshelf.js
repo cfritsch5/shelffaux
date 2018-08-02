@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   var targetBookDiv = null;
   var targetBookObject = null;
   var inTopx = 40;
+  var maxAngle = 60;
   shelvebooks();
   const ToRad = 3.14/180;
 
@@ -52,8 +53,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     function browse(_e){
       // let newAngle = _e.movementX/4 + targetBookObject.angle;
       let newAngle = Math.asin(_e.movementX/targetBookObject.depth)*(180/Math.PI) + targetBookObject.angle;
-      if(newAngle > 90){newAngle = 90;}
-      if(newAngle < -90){newAngle = -90;}
+      if(newAngle > maxAngle){newAngle = maxAngle;}
+      if(newAngle < -maxAngle){newAngle = -maxAngle;}
       targetBookObject.updateTransformation({rY:newAngle});
       pushBooks(targetBookObject, _e.movementX);
     }
@@ -79,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     function pushBooks(bookObj, movementX){
       // console.log(bookObj);
-      console.log(movementX);
+      // console.log(movementX);
       let book1 = bookObj;
       let book2 = null;
       let book1Points = getBookCoords(bookObj);
@@ -95,12 +96,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
           gap = minMaxOverlap(axies, book1Points, book2Points);
 
           if(gap){
-            console.log("GAP between", bookObj.title, "and", books[i].title);
+            console.log("!!!!!GAP between", book1.title, "and", book2.title);
+            console.log((`\n ${i}`));
             break;
           } else {
-            // console.log("overlapping", book1.title, "and", book2.title);
+            console.log("overlapping", book1.title, "and", book2.title);
             book2.angle = book1.angle;
             book2.updateTransformation({rY: book2.angle});
+            if(book1.title === bookObj.title){
+              deltaX = book1.transforms.tX;
+            }
             deltaX = book2.width/(Math.cos(ToRad*(book2.angle)))-book2.width*Math.cos(ToRad*book2.angle) + deltaX + 2;
 
             book2.updateTransformation({tX: deltaX});
@@ -115,25 +120,43 @@ document.addEventListener("DOMContentLoaded", function(event) {
             book1 = book2;
             book1Points = book2Points;
           }
+
+      }
+      if(bookObj.angle < 0 && movementX < 0){
+        for( let i = bookObj.i-1; i >= 0 ; i--){
+          console.log("try???");
+          book2 = books[i];
+          book2Points = getBookCoords(book2);
+          axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
+          gap = minMaxOverlap(axies, book1Points, book2Points);
+
+          if(gap){
+            console.log("GAP between", book1.title, "and", book2.title);
+            break;
+          } else {
+            console.log("overlapping", book1.title, "and", book2.title);
+            book2.angle = book1.angle;
+            book2.updateTransformation({rY: book2.angle});
+            if(book1.title === bookObj.title){
+              deltaX = book1.transforms.tX;
+            }
+            deltaX = book2.width/(Math.cos(ToRad*(book2.angle)))-book2.width*Math.cos(ToRad*book2.angle) + deltaX + 2;
+
+            book2.updateTransformation({tX: -deltaX});
+            // console.log('book1Points',book1Points);
+            // console.log('book2Points',book2Points);
+
+            // update book 2 transfornation based on
+            // book2.angle = book1.angle;
+
+            }
+            gap = false;
+            book1 = book2;
+            book1Points = book2Points;
         }
 
-      // } else {
-      //   for( let i = bookObj.i-1; i >= 0 ; i--){
-      //     console.log("try???");
-      //     book2 = getBookCoords(books[i]);
-      //     axies = [book1.p, book1.q, book2.p, book2.q];
-      //     gap = minMaxOverlap(axies, book1, book2);
-      //
-      //     if(gap){
-      //       console.log("GAP between", books[i].title);
-      //     } else {
-      //       console.log("overlapping", books[i].title);
-      //     }
-      //     gap = false;
-      //     book1 = book2;
-      //   }
-
     }
+  }
 
     function minMaxOverlap(axies, book1, book2){
       for(let j = 0; j < axies.length; j++){
