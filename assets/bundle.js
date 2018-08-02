@@ -463,10 +463,7 @@ var Book = function () {
     key: 'updateTransformation',
     value: function updateTransformation(transforms) {
       this.transforms = Object.assign({}, this.transforms, transforms);
-      // console.log(this.title, this.transforms, transforms);
       this.angle = this.transforms.rY;
-      // this.transforms.tX = this.transforms.tX + transforms.tX;
-      //transforms = {rX:50, rY:0}
       var side = this.angle < 0 ? 'left' : 'right';
       this.updateOrigin(side);
 
@@ -482,35 +479,56 @@ var Book = function () {
   }, {
     key: 'createHtmlObject',
     value: function createHtmlObject() {
-      var sides = { 'right': null, 'left': null, 'front': null, 'back': null, 'top': null, 'bottom': null };
-      var bookWrapper = document.createElement('div');
-      var container = document.createElement('div');
-      var box = document.createElement('div');
+      var bookWrapper = this.createWrapper();
+      // let container = this.createContainer(bookWrapper);
+      var box = this.createBox(bookWrapper);
 
+      return bookWrapper;
+    }
+  }, {
+    key: 'createWrapper',
+    value: function createWrapper() {
+      var bookWrapper = document.createElement('div');
+      bookWrapper.classList.add('book', this.title);
+      bookWrapper.appendChild(this.genStyle());
+      return bookWrapper;
+    }
+
+    // createContainer(bookWrapper){
+    //   let container = document.createElement('div');
+    //   container.classList.add('container', `${this.title}container`);
+    //   bookWrapper.appendChild(container);
+    //   return container;
+    // }
+
+  }, {
+    key: 'createBox',
+    value: function createBox(bookWrapper) {
+      var box = document.createElement('div');
+      box = this.addSides(box);
+      box.classList.add('box', this.title + '-box');
+      bookWrapper.appendChild(box);
+      return box;
+    }
+  }, {
+    key: 'addSides',
+    value: function addSides(box) {
+      var sides = { 'right': null, 'left': null, 'front': null, 'back': null, 'top': null, 'bottom': null };
       for (var side in sides) {
         sides[side] = document.createElement('figure');
         sides[side].classList.add(this.title + '-side', side, 'side');
         box.appendChild(sides[side]);
       }
-
-      bookWrapper.classList.add('book', this.title);
-      container.classList.add('container', this.title + 'container');
-      box.classList.add('box', this.title + '-box');
-
-      container.appendChild(box);
-      bookWrapper.appendChild(this.genStyle());
-      bookWrapper.appendChild(container);
-
-      bookWrapper.draggable = true;
-      return bookWrapper;
+      return box;
     }
   }, {
     key: 'genStyle',
     value: function genStyle() {
-      var depth = this.depth;
-      var width = this.width;
-      var height = this.height;
-      var title = this.title;
+      var depth = this.depth,
+          width = this.width,
+          height = this.height,
+          title = this.title;
+
       var style = document.createElement('style');
       style.scoped = 'scoped';
       style.type = "text/css";

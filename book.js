@@ -55,10 +55,7 @@ class Book {
 
   updateTransformation(transforms){
     this.transforms = Object.assign({},this.transforms, transforms);
-    // console.log(this.title, this.transforms, transforms);
     this.angle = this.transforms.rY;
-    // this.transforms.tX = this.transforms.tX + transforms.tX;
-    //transforms = {rX:50, rY:0}
     let side = this.angle < 0 ? 'left' : 'right';
     this.updateOrigin(side);
 
@@ -76,34 +73,47 @@ class Book {
   }
 
   createHtmlObject(){
-    let sides = {'right':null, 'left':null, 'front':null, 'back':null, 'top':null, 'bottom':null};
-    let bookWrapper = document.createElement('div');
-    let container = document.createElement('div');
-    let box = document.createElement('div');
+    let bookWrapper = this.createWrapper();
+    // let container = this.createContainer(bookWrapper);
+    let box = this.createBox(bookWrapper);
 
+    return bookWrapper;
+  }
+
+  createWrapper(){
+    let bookWrapper = document.createElement('div');
+    bookWrapper.classList.add('book', this.title);
+    bookWrapper.appendChild(this.genStyle());
+    return bookWrapper;
+  }
+
+  // createContainer(bookWrapper){
+  //   let container = document.createElement('div');
+  //   container.classList.add('container', `${this.title}container`);
+  //   bookWrapper.appendChild(container);
+  //   return container;
+  // }
+
+  createBox(bookWrapper){
+    let box = document.createElement('div');
+    box = this.addSides(box);
+    box.classList.add('box', `${this.title}-box`);
+    bookWrapper.appendChild(box);
+    return box;
+  }
+
+  addSides(box){
+    let sides = {'right':null, 'left':null, 'front':null, 'back':null, 'top':null, 'bottom':null};
     for(let side in sides){
         sides[side] = document.createElement('figure');
         sides[side].classList.add(`${this.title}-side`, side,'side');
         box.appendChild(sides[side]);
     }
-
-    bookWrapper.classList.add('book', this.title);
-    container.classList.add('container', `${this.title}container`);
-    box.classList.add('box', `${this.title}-box`);
-
-    container.appendChild(box);
-    bookWrapper.appendChild(this.genStyle());
-    bookWrapper.appendChild(container);
-
-    bookWrapper.draggable = true;
-    return bookWrapper;
+    return box;
   }
 
   genStyle(){
-    let depth = this.depth;
-    let width = this.width;
-    let height = this.height;
-    let title = this.title;
+    let {depth, width, height, title} = this;
     let style = document.createElement('style');
     style.scoped = 'scoped';
     style.type = "text/css";
