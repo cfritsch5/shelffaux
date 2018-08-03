@@ -124,3 +124,10 @@ canvas {
     width: 200px;
     background: rgba(255, 255, 255, 0.62);
   }
+
+
+
+/* testing playground */
+.no-clicky {
+    pointer-events: none;
+}

@@ -12,7 +12,11 @@
 /tmp/*
 !/log/.keep
 !/tmp/.keep
+<<<<<<< HEAD
 *bundle
+=======
+*bundle*
+>>>>>>> 78ff33a982bd5cca3dc877d6761abb5cb3e5164d
 
 # Ignore Byebug command history file.
 node_modules/
