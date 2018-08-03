@@ -15,10 +15,6 @@ class Book {
     this.phi=Math.asin(this.width/this.diagonal);//is in radians
 
     this.html = this.createHtmlObject();
-
-    // this.vector = new Vector(1,2);
-    // this.x = 0;
-    // this.y = this.depth/2;
   }
 
     // top view
@@ -39,19 +35,6 @@ class Book {
   title = title.match(/\b\w/gi).join("");
   return title;
 }
-
-/*
-<div class="book HPPS" style="transition: 0s ease-in-out; transform: rotateY(-10deg);">
-  <style type="text/css" scoped="">{...}</style>
-  <div class="container HPPS-container">
-    <div class="box HPPS-box">
-      <figure class="side front"></figure>
-      {...}
-      <figure class="side back"></figure>
-    </div>
-  </div>
-</div>
-*/
 
   updateTransformation(transforms){
     this.transforms = Object.assign({},this.transforms, transforms);
@@ -87,13 +70,6 @@ class Book {
     return bookWrapper;
   }
 
-  // createContainer(bookWrapper){
-  //   let container = document.createElement('div');
-  //   container.classList.add('container', `${this.title}container`);
-  //   bookWrapper.appendChild(container);
-  //   return container;
-  // }
-
   createBox(bookWrapper){
     let box = document.createElement('div');
     box = this.addSides(box);
@@ -122,11 +98,6 @@ class Book {
         width: ${width}px;
         height: ${height}px;
         transform-origin: center center ${0}px;
-      }
-
-      .${title}-container {
-        width: ${width}px;
-        height: ${height}px;
       }
 
       .${title}-box .front {
