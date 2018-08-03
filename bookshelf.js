@@ -2,172 +2,165 @@ import Book from './book';
 import Books from './books';
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  var canvas = document.getElementById('shelf');
-  var ctx = canvas.getContext('2d');
+  var shelf = document.getElementById('shelf');
   var books = addBooks();
-  var bookWidth = 50;
-  var show = false;
-
-    function draw(x, y) {
-      x -= canvas.getBoundingClientRect().left;
-
-      let bound = bookWidth * 2;
-      ctx.clearRect(x-bound, 0, x+bound, canvas.height);
-      ctx.clearRect(0, 0, 100, canvas.height);
-
-      let book, position = 100;
-      for(let i = 0 ; i < books.length; i++ ) {
-        books[i].leftBorder = position;
-        position +=  bookWidth;
-        books[i].rightBorder = position;
-        book = books[i];
-        book.draw(ctx, x, y);
-      }
-
-    }
+  var targetBookDiv = null;
+  var targetBookObject = null;
 
     function addBooks(){
-      let cover, spine, book = {};
       var _books = [];
       for(let i = 0 ; i < Books.length; i++) {
-        cover = new Image();
-        cover.src = Books[i].cover;
-        spine = new Image();
-        spine.src = Books[i].spine;
-        // books[i] = books[i] || {cover: "", spine: ""};
-        // book = new Book(cover, spine, 0, 0, Books[i].author, Books[i].title, Books[i].depth, Books[i].review);
-        book = new Book(cover, spine, 0, 0,
-          Books[i].author, Books[i].title,
-          Books[i].review, Books[i].stars);
+        let book = null;
+        book = new Book(Books[i], i);
         _books.push(book);
+        shelf.appendChild(book.html);
+        book.html.addEventListener('mousemove',onMove);
       }
       return _books;
     }
 
-    function browse(e){
-      const x = e.clientX;
-      const y = e.clientY;
-      draw(x,y);
-    }
-
-    function showbook(e){
-      let x = e.clientX;
-      let y = e.clientY;
-      let rect = canvas.getBoundingClientRect();
-
-      if (show === true ){
-        canvas.addEventListener('mousemove',browse,false);
-        show = false;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw(x,y);
-        document.getElementById('right').innerHTML = "";
-      } else {
-        canvas.removeEventListener("mousemove", browse, false);
-        show = true;
-
-        x -= rect.left;
-
-        let showthisbook;
-        books.forEach((isbook)=>{
-          if (x > isbook.leftBorder && x < isbook.rightBorder){
-            showthisbook = isbook;
-          }
-        });
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        draw(x + rect.left,y);
-        showthisbook.showCover(ctx,x,y);
-
-        document.getElementById('right').innerHTML = `
-        <div class="bookDisplay">
-        <h3>${showthisbook.title}</h3>
-        <h4>By: ${showthisbook.author}</h4>
-        <p> ${showthisbook.stars}</p>
-        <p>Notes: </p>
-        <p> ${showthisbook.review}</p>
-        </div>
-        `;
+    function onMove(e){
+      targetBookDiv = e.currentTarget;
+      targetBookObject = findBookObject(targetBookDiv.classList[1]);
+      for(let i = 0; i < Books.length; i++){
+        let direction = i <= targetBookObject.position ? -1 : 1;
+        books[i].updateTransformation({rY:45*direction});
       }
     }
 
-    function titlebubble(){
-      bubbleBooks("title");
-      setButtonDisabled("title-sort");
-      setButtonDisabled("author-sort");
-    }
+    // function shelvebooks(){
+    //   let pos = 0;
+    //   for(let i = 0; i < books.length ; i++){
+    //     books[i].i = i;
+    //     books[i].x = pos;
+    //     pos = pos + books[i].width + 2;
+    //     console.log(books[i]);
+    //     window[books[i].title] = books[i];
+    //     window.books = books;
+    //     shelf.appendChild(books[i].html);
+    //     // click on particular book then mouseover to turn only that book
+    //     books[i].html.addEventListener('click',toggleBrowse);
+    //     // books[i].html.addEventListener('touchstart',toggleBrowse);
+    //   }
+    // }
 
-    function authorbubble(){
-      bubbleBooks("author");
-      setButtonDisabled("author-sort");
-      setButtonDisabled("title-sort");
-    }
+    // function toggleBrowse(e){
+    //   targetBookDiv = e.currentTarget;
+    //   targetBookObject = findBookObject(targetBookDiv.classList[1]);
+    //
+    //   if(targetBookObject.clicked){
+    //     shelf.removeEventListener('mousemove',browse);
+    //     targetBookObject.clicked = false;
+    //   } else {
+    //     shelf.addEventListener('mousemove',browse);
+    //     targetBookObject.clicked = true;
+    //   }
+    // }
 
-    document.getElementById("title-sort").onclick = titlebubble;
-    document.getElementById("author-sort").onclick = authorbubble;
+    // function browse(_e){
+    //   // let newAngle = _e.movementX/4 + targetBookObject.angle;
+    //   let newAngle = Math.asin(_e.movementX/targetBookObject.depth)*(180/Math.PI) + targetBookObject.angle;
+    //   if(newAngle > maxAngle){newAngle = maxAngle;}
+    //   if(newAngle < -maxAngle){newAngle = -maxAngle;}
+    //   targetBookObject.updateTransformation({rY:newAngle});
+    //   pushBooks(targetBookObject, _e.movementX);
+    // }
 
-    function setButtonDisabled(btnClass){
-      // console.log("disable", btnClass);
-      let btn = document.getElementById(btnClass);
-      btn.className = "disabled";
-      btn.disabled = true;
-    }
-
-    function enableButton(btnClass){
-      // console.log("endable",btnClass);
-      let btn = document.getElementById(btnClass);
-      btn.className = "enabled";
-      btn.disabled = false;
-    }
-
-    canvas.addEventListener('mousemove',browse,false);
-    canvas.addEventListener('click',showbook);
-    const start = setInterval(()=>(draw(0,0)),100);
-    setTimeout(()=>clearInterval(start),3000);
-
-
-    const bubbleBooks = function (prop){
-      // console.log("sorting");
-      document.createElement("h1").innerHTML = "SoRting";
-      const go = setInterval( ()=>{
-        let callCompar;
-        let sorted = false;
-        let temp = {};
-
-        if(typeof prop === "string"){
-          //set comparator callback
-          callCompar = (i,j) => (Books[i][prop].localeCompare(Books[j][prop]) > 0);
-          // console.log("str cal comp", callCompar(0,1));
-        } else {
-          callCompar = (i,j) => (Books[i][prop] > (Books[j][prop]));
+    function findBookObject(title){
+      for(let i = 0; i < books.length; i++){
+        if(books[i].title === title){
+          return books[i];
         }
+      }
+    }
 
-        for(let i = 0, j = i + 1; i < Books.length - 1 ; i++, j++){
+    // function updateAngles(bookObj,movementX){
+    //   let direction = movementX > 0 ? 'pos' : 'neg';
+    //   // direction === 'pos' ? updateForwardAngels() : updateBackwardAngles();
+    //   for (let i = bookObj.i; i<books.length ; i++) {
+    //     // going forward
+    //
+    //     books[i].updateTransformation({rY:bookObj.angle});
+    //     pushBooks(books[i], books[i+1]);
+    //   }
+    // }
 
-          if(callCompar(i,j)){
+  //   function pushBooks(bookObj, movementX){
+  //     let book1 = bookObj;
+  //     let book2 = null;
+  //     let book1Points = getBookCoords(bookObj);
+  //     let axies, gap = false;
+  //     let book2Points = null;
+  //     let deltaX = 0;
+  //
+  //     if(bookObj.angle > 0 && movementX > 0){
+  //       for( let i = bookObj.i+1; i < books.length ; i++){
+  //         book2 = books[i];
+  //         book2Points = getBookCoords(book2);
+  //         axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
+  //         gap = minMaxOverlap(axies, book1Points, book2Points);
+  //
+  //         if(gap){
+  //           console.log("!!!!!GAP between", book1.title, "and", book2.title);
+  //           console.log((`\n ${i}`));
+  //           break;
+  //         } else {
+  //           console.log("overlapping", book1.title, "and", book2.title);
+  //           book2.angle = book1.angle;
+  //           book2.updateTransformation({rY: book2.angle});
+  //           if(book1.title === bookObj.title){
+  //             deltaX = book1.transforms.tX;
+  //           }
+  //           deltaX = book2.width/(Math.cos(ToRad*(book2.angle)))-book2.width*Math.cos(ToRad*book2.angle) + deltaX + 2;
+  //
+  //           book2.updateTransformation({tX: deltaX});
+  //           // console.log('book1Points',book1Points);
+  //           // console.log('book2Points',book2Points);
+  //
+  //           // update book 2 transfornation based on
+  //           // book2.angle = book1.angle;
+  //
+  //           }
+  //           gap = false;
+  //           book1 = book2;
+  //           book1Points = book2Points;
+  //         }
+  //
+  //     }
+  //     if(bookObj.angle < 0 && movementX < 0){
+  //       for( let i = bookObj.i-1; i >= 0 ; i--){
+  //         console.log("try???");
+  //         book2 = books[i];
+  //         book2Points = getBookCoords(book2);
+  //         axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
+  //         gap = minMaxOverlap(axies, book1Points, book2Points);
+  //
+  //         if(gap){
+  //           console.log("GAP between", book1.title, "and", book2.title);
+  //           break;
+  //         } else {
+  //           console.log("overlapping", book1.title, "and", book2.title);
+  //           book2.angle = book1.angle;
+  //           book2.updateTransformation({rY: book2.angle});
+  //           if(book1.title === bookObj.title){
+  //             deltaX = book1.transforms.tX;
+  //           }
+  //           deltaX = book2.width/(Math.cos(ToRad*(book2.angle)))-book2.width*Math.cos(ToRad*book2.angle) + deltaX + 2;
+  //
+  //           book2.updateTransformation({tX: -deltaX});
+  //           // console.log('book1Points',book1Points);
+  //           // console.log('book2Points',book2Points);
+  //
+  //           // update book 2 transfornation based on
+  //           // book2.angle = book1.angle;
+  //
+  //           }
+  //           gap = false;
+  //           book1 = book2;
+  //           book1Points = book2Points;
+  //       }
+  //
+  //   }
+  // }
 
-            temp = books[i];
-            books[i] = books[j];
-            books[j] = temp;
-            temp = Books[i];
-            Books[i] = Books[j];
-            Books[j] = temp;
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            draw(0,0);
-            break;
-          }
-
-          if(j === Books.length - 1){
-            sorted = true;
-          }
-        }
-        if(sorted === true){
-          clearInterval(go);
-          if(prop == "author"){
-            enableButton("title-sort");
-          } else {
-            enableButton("author-sort");
-          }
-        }
-      },1000);
-    };
 });

@@ -1,93 +1,186 @@
+import Vector from './vector';
+
 class Book {
-  constructor(CoverImage, SpineImage, leftBorder, rightBorder, author, title, review, stars){
-    this.CoverImage = CoverImage;
-    this.SpineImage = SpineImage;
-    this.leftBorder = leftBorder;
-    this.rightBorder = rightBorder;
-    this.author = author;
-    this.title = title;
-    this.topSpace = 10;
-    this.show = true;
-    this.draw = this.draw.bind(this);
-    this.drawCover = this.drawCover.bind(this);
-    this.drawSpine = this.drawSpine.bind(this);
-    this.show = this.showQ.bind(this);
-    this.review = review;
-    this.stars = stars;
+  constructor(bookObj, position){
+    this.book = bookObj;
+    this.title = this.shortcode();
+    this.position = position;
+    // this.clicked = false;
+    this.angle = 0;
+    this.transforms = {rX: 0, rY: 0, rZ: 0, tX: 0, tY: 0, tZ: 0};
+
+    this.width = 40*this.book.width;
+    this.height = 40*this.book.height;
+    this.depth = 40*this.book.depth;
+    // this.diagonal = Math.sqrt(Math.pow(this.width,2)+Math.pow(this.depth,2));
+    // this.phi=Math.asin(this.width/this.diagonal);//is in radians
+
+    this.html = this.createHtmlObject();
   }
 
-  showQ(bool = false){
-    this.show = bool;
-    console.log(this.show);
-    console.log(this.title);
-  }
+    // top view
+    // 0,0 -----------> x
+    //    |  A _____ B
+    //    |   |     |  d
+    //    |   |     |  e
+    //    |   |width|  p
+    //    |   |<--->|  t
+    //    |   |     |  h
+    //    y  C|_____|D
 
-  showCover(ctx,x,y){
-    ctx.drawImage(this.CoverImage,this.leftBorder-50,0,200,335);
-  }
-
-  drawCover(ctx, A){
-    let img = this.CoverImage;
-    let sx = 0, sy = 0; //start cliping from (sx,sy) relative to image
-    let swidth = 10, sheight = img.height; //width and height of clipped Image
-    let x = A.x, y = A.y; // coordinates where to start drawing Image
-    let width = 2, height = 325; //display width & height aka stretch or reduce image
-
-    let coverWidth = this.rightBorder - A.x;
-    let sample = Math.floor(img.width / coverWidth);
-    swidth = sample;
-
-    let deltaY = (25/coverWidth);
-    for ( let i = 0 ; i < coverWidth; i++){
-      sx += sample;
-      y += deltaY;
-      height -= deltaY * 2;
-      ctx.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
-      x += 1;
-    }
-  }
-
-  drawSpine(ctx, xstart, ystart, plusxWide, plusyTall){
-    let img = this.SpineImage;
-    ctx.drawImage(img, xstart, ystart, 50, 325);
-  }
-
-  draw(ctx, x, y){
-    if (!this.show) {
-      console.log("no show");
-      return null;
-    }
-    let {leftBorder, rightBorder, topSpace, width, height, mid}= this;
-    let xRel = x - leftBorder; //x relative to book left border
-    let pointA, pointB, pointC, pointD;
-
-    switch(true){
-
-      case (x <= leftBorder):
-        this.drawSpine(ctx,leftBorder, topSpace, width, height);
-        break;
-
-      case (x >= leftBorder && x <rightBorder):
-
-        pointA = {x: rightBorder - xRel, y: topSpace}; //topleft
-
-
-        this.drawSpine(ctx, leftBorder-xRel, topSpace, width, height);
-        this.drawCover(ctx, pointA);
-        break;
-
-      case (x >= rightBorder):
-
-        pointA = {x: rightBorder - (50), y: topSpace}; //topleft
-
-        this.drawCover(ctx, pointA);
-        this.drawSpine(ctx,leftBorder-(50), topSpace, 50, 325);
-        break;
-
-      default:
-    }
-  }
-
+  shortcode(){
+  // - todo later - make shortcode util that will ensure uniqeness
+  // - or have a hardcoded unique ID
+  let title = this.book.title;
+  title = title.replace(/the|of|and|in|to|on|by/gi, '');
+  title = title.match(/\b\w/gi).join("");
+  return title;
 }
+
+  updateTransformation(transforms){
+    this.transforms = Object.assign({},this.transforms, transforms);
+    this.angle = this.transforms.rY;
+    let side = this.angle < 0 ? 'left' : 'right';
+    this.updateOrigin(side);
+
+    this.html.style.transform = `
+    translateX(${this.transforms.tX}px)
+    translateZ(${this.transforms.tZ})
+    rotateY(${this.transforms.rY}deg)
+    `;
+  }
+
+  updateOrigin(side){
+    if (side === 'left' || side === 'right'){
+      this.html.style['transform-origin'] = side;
+    }
+  }
+
+  createHtmlObject(){
+    let bookWrapper = this.createWrapper();
+    // let container = this.createContainer(bookWrapper);
+    let box = this.createBox(bookWrapper);
+
+    return bookWrapper;
+  }
+
+  createWrapper(){
+    let bookWrapper = document.createElement('div');
+    bookWrapper.classList.add('book', this.title);
+    bookWrapper.appendChild(this.genStyle());
+    return bookWrapper;
+  }
+
+  createBox(bookWrapper){
+    let box = document.createElement('div');
+    box = this.addSides(box);
+    box.classList.add('box', `${this.title}-box`);
+    bookWrapper.appendChild(box);
+    return box;
+  }
+
+  addSides(box){
+    let sides = {'right':null, 'left':null, 'front':null, 'back':null, 'top':null, 'bottom':null};
+    for(let side in sides){
+        sides[side] = document.createElement('figure');
+        sides[side].classList.add(`${this.title}-side`, side,'side');
+        box.appendChild(sides[side]);
+    }
+    return box;
+  }
+
+  genStyle(){
+    let {depth, width, height, title} = this;
+    let style = document.createElement('style');
+    style.scoped = 'scoped';
+    style.type = "text/css";
+    style.innerHTML =  `
+      .${/*book*/ title} {
+        width: ${width}px;
+        height: ${height}px;
+        transform-origin: center center ${0}px;
+      }
+
+      .${title}-box .front {
+        width: ${width}px;
+        height: ${height}px;
+      }
+
+      .${title}-box .back {
+        width: ${width}px;
+        height: ${height - 5}px;
+      }
+
+      .${title}-box .front {
+        background-image: url(${this.book.spine});
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .${title}-box .right,
+      .${title}-box .left {
+        width: ${depth}px;
+        height: ${height}px;
+      }
+
+      .${title}-box .right {
+        background-image: url(${this.book.cover});
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .${title}-box .left {
+        background-image: url(${this.book.back});
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .${title}-box .top,
+      .${title}-box .bottom {
+        width: ${width}px;
+        height: ${depth}px;
+      }
+
+      .${title}-box .front  {
+        transform: rotateY( 0deg )
+        translateZ( ${depth}px );
+      }
+      .${title}-box .back   {
+        transform:
+          rotateX( 180deg )
+          translateZ( ${0 - 5}px );
+      }
+      .${title}-box .right  {
+        transform:
+          rotateY(  90deg )
+          translateZ( ${width/2}px )
+          translateX(${-depth/2}px);
+      }
+      .${title}-box .left   {
+        transform:
+          rotateY( -90deg )
+          translateZ( ${width/2}px )
+          translateX(${depth/2}px);
+      }
+      .${title}-box .top    {
+        transform:
+          rotateX(  90deg )
+          translateZ( ${height/2 - 5}px )
+          translateY(${depth/2}px);
+      }
+      .${title}-box .bottom {
+        transform:
+          rotateX( -90deg )
+          translateZ( ${height/2 - 5}px )
+          translateY(${-depth/2}px);
+      }
+      `;
+      return style;
+  }
+}
+
 
 export default Book;
