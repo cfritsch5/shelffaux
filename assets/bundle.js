@@ -101,30 +101,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
   function onMove(e) {
     targetBookDiv = e.currentTarget;
     targetBookObject = findBookObject(targetBookDiv.classList[1]);
-    // let direction = e.movementX >= 0 ? 1 : -1;
-    // let i = targetBookObject.position;
-    // let flag = true;
-    // while(flag && Math.abs(i) < Books.length){
-    //   turnBook(Books[i], 60*direction);
-    //   i += direction;
-    //   if(direction > 0){
-    //     flag = i < Books.length;
-    //   } else {
-    //     flag = i >= 0;
-    //   }
-    //   console.log(i, flag);
-    // }
     for (var i = 0; i < _books3.default.length; i++) {
       var direction = i <= targetBookObject.position ? -1 : 1;
-      // turnBook(Books[i], 60*direction);
       books[i].updateTransformation({ rY: 45 * direction });
-    }
-  }
-
-  function turnBook(book, newAngle) {
-    console.log(book.title, newAngle);
-    for (var i = book.angle; i < newAngle; i++) {
-      book.updateTransformation({ rY: i });
     }
   }
 
