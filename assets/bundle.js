@@ -80,72 +80,91 @@ var _books3 = _interopRequireDefault(_books2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 document.addEventListener("DOMContentLoaded", function (event) {
   var shelf = document.getElementById('shelf');
   var books = addBooks();
   var targetBookDiv = null;
   var targetBookObject = null;
-  var inTopx = 40;
-  var maxAngle = 60;
-  shelvebooks();
-  var ToRad = 3.14 / 180;
 
   function addBooks() {
-    var cover = void 0,
-        back = void 0,
-        spine = void 0,
-        book = {};
     var _books = [];
     for (var i = 0; i < _books3.default.length; i++) {
-      book = new _book2.default(_books3.default[i]);
+      var book = null;
+      book = new _book2.default(_books3.default[i], i);
       _books.push(book);
+      shelf.appendChild(book.html);
+      book.html.addEventListener('mousemove', onMove);
     }
     return _books;
   }
 
-  function shelvebooks() {
-    var pos = 0;
-    for (var i = 0; i < books.length; i++) {
-      books[i].i = i;
-      books[i].x = pos;
-      pos = pos + books[i].width + 2;
-      // console.log(books[i]);
-      window[books[i].title] = books[i];
-      window.books = books;
-      shelf.appendChild(books[i].html);
-      // click on particular book then mouseover to turn only that book
-      books[i].html.addEventListener('click', toggleBrowse);
-      // books[i].html.addEventListener('touchstart',toggleBrowse);
-    }
-  }
-
-  function toggleBrowse(e) {
+  function onMove(e) {
     targetBookDiv = e.currentTarget;
     targetBookObject = findBookObject(targetBookDiv.classList[1]);
-
-    if (targetBookObject.clicked) {
-      shelf.removeEventListener('mousemove', browse);
-      targetBookObject.clicked = false;
-    } else {
-      shelf.addEventListener('mousemove', browse);
-      targetBookObject.clicked = true;
+    // let direction = e.movementX >= 0 ? 1 : -1;
+    // let i = targetBookObject.position;
+    // let flag = true;
+    // while(flag && Math.abs(i) < Books.length){
+    //   turnBook(Books[i], 60*direction);
+    //   i += direction;
+    //   if(direction > 0){
+    //     flag = i < Books.length;
+    //   } else {
+    //     flag = i >= 0;
+    //   }
+    //   console.log(i, flag);
+    // }
+    for (var i = 0; i < _books3.default.length; i++) {
+      var direction = i <= targetBookObject.position ? -1 : 1;
+      // turnBook(Books[i], 60*direction);
+      books[i].updateTransformation({ rY: 45 * direction });
     }
   }
 
-  function browse(_e) {
-    // let newAngle = _e.movementX/4 + targetBookObject.angle;
-    var newAngle = Math.asin(_e.movementX / targetBookObject.depth) * (180 / Math.PI) + targetBookObject.angle;
-    if (newAngle > maxAngle) {
-      newAngle = maxAngle;
+  function turnBook(book, newAngle) {
+    console.log(book.title, newAngle);
+    for (var i = book.angle; i < newAngle; i++) {
+      book.updateTransformation({ rY: i });
     }
-    if (newAngle < -maxAngle) {
-      newAngle = -maxAngle;
-    }
-    targetBookObject.updateTransformation({ rY: newAngle });
-    pushBooks(targetBookObject, _e.movementX);
   }
+
+  // function shelvebooks(){
+  //   let pos = 0;
+  //   for(let i = 0; i < books.length ; i++){
+  //     books[i].i = i;
+  //     books[i].x = pos;
+  //     pos = pos + books[i].width + 2;
+  //     console.log(books[i]);
+  //     window[books[i].title] = books[i];
+  //     window.books = books;
+  //     shelf.appendChild(books[i].html);
+  //     // click on particular book then mouseover to turn only that book
+  //     books[i].html.addEventListener('click',toggleBrowse);
+  //     // books[i].html.addEventListener('touchstart',toggleBrowse);
+  //   }
+  // }
+
+  // function toggleBrowse(e){
+  //   targetBookDiv = e.currentTarget;
+  //   targetBookObject = findBookObject(targetBookDiv.classList[1]);
+  //
+  //   if(targetBookObject.clicked){
+  //     shelf.removeEventListener('mousemove',browse);
+  //     targetBookObject.clicked = false;
+  //   } else {
+  //     shelf.addEventListener('mousemove',browse);
+  //     targetBookObject.clicked = true;
+  //   }
+  // }
+
+  // function browse(_e){
+  //   // let newAngle = _e.movementX/4 + targetBookObject.angle;
+  //   let newAngle = Math.asin(_e.movementX/targetBookObject.depth)*(180/Math.PI) + targetBookObject.angle;
+  //   if(newAngle > maxAngle){newAngle = maxAngle;}
+  //   if(newAngle < -maxAngle){newAngle = -maxAngle;}
+  //   targetBookObject.updateTransformation({rY:newAngle});
+  //   pushBooks(targetBookObject, _e.movementX);
+  // }
 
   function findBookObject(title) {
     for (var i = 0; i < books.length; i++) {
@@ -166,217 +185,81 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //   }
   // }
 
-  function pushBooks(bookObj, movementX) {
-    // console.log(bookObj);
-    // console.log(movementX);
-    var book1 = bookObj;
-    var book2 = null;
-    var book1Points = getBookCoords(bookObj);
-    var axies = void 0,
-        gap = false;
-    var book2Points = null;
-    var deltaX = 0;
-
-    if (bookObj.angle > 0 && movementX > 0) {
-      for (var i = bookObj.i + 1; i < books.length; i++) {
-        book2 = books[i];
-        book2Points = getBookCoords(book2);
-        axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
-        gap = minMaxOverlap(axies, book1Points, book2Points);
-
-        if (gap) {
-          console.log("!!!!!GAP between", book1.title, "and", book2.title);
-          console.log('\n ' + i);
-          break;
-        } else {
-          console.log("overlapping", book1.title, "and", book2.title);
-          book2.angle = book1.angle;
-          book2.updateTransformation({ rY: book2.angle });
-          if (book1.title === bookObj.title) {
-            deltaX = book1.transforms.tX;
-          }
-          deltaX = book2.width / Math.cos(ToRad * book2.angle) - book2.width * Math.cos(ToRad * book2.angle) + deltaX + 2;
-
-          book2.updateTransformation({ tX: deltaX });
-          // console.log('book1Points',book1Points);
-          // console.log('book2Points',book2Points);
-
-          // update book 2 transfornation based on
-          // book2.angle = book1.angle;
-        }
-        gap = false;
-        book1 = book2;
-        book1Points = book2Points;
-      }
-    }
-    if (bookObj.angle < 0 && movementX < 0) {
-      for (var _i = bookObj.i - 1; _i >= 0; _i--) {
-        console.log("try???");
-        book2 = books[_i];
-        book2Points = getBookCoords(book2);
-        axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
-        gap = minMaxOverlap(axies, book1Points, book2Points);
-
-        if (gap) {
-          console.log("GAP between", book1.title, "and", book2.title);
-          break;
-        } else {
-          console.log("overlapping", book1.title, "and", book2.title);
-          book2.angle = book1.angle;
-          book2.updateTransformation({ rY: book2.angle });
-          if (book1.title === bookObj.title) {
-            deltaX = book1.transforms.tX;
-          }
-          deltaX = book2.width / Math.cos(ToRad * book2.angle) - book2.width * Math.cos(ToRad * book2.angle) + deltaX + 2;
-
-          book2.updateTransformation({ tX: -deltaX });
-          // console.log('book1Points',book1Points);
-          // console.log('book2Points',book2Points);
-
-          // update book 2 transfornation based on
-          // book2.angle = book1.angle;
-        }
-        gap = false;
-        book1 = book2;
-        book1Points = book2Points;
-      }
-    }
-  }
-
-  function minMaxOverlap(axies, book1, book2) {
-    for (var j = 0; j < axies.length; j++) {
-      var b1 = transformIntoPsAndQs(axies[j], book1.points);
-      var b2 = transformIntoPsAndQs(axies[j], book2.points);
-      var min1 = Math.min.apply(Math, _toConsumableArray(b1));
-      var max1 = Math.max.apply(Math, _toConsumableArray(b1));
-      var min2 = Math.min.apply(Math, _toConsumableArray(b2));
-      var max2 = Math.max.apply(Math, _toConsumableArray(b2));
-      // console.log("minmax",min1,max1,min2,max2);
-      if (min2 > max1 || min1 > max2) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  function transformIntoPsAndQs(unitVec, points) {
-    // console.log(points, 'unitvec:',unitVec);
-    var a = points.ax * unitVec.x + points.ay * unitVec.y;
-    // let aq = points.ax*q.x + points.ay*q.y;
-    var b = points.bx * unitVec.x + points.by * unitVec.y;
-    // let bq = points.bx*q.x + points.by*q.y;
-    var c = points.cx * unitVec.x + points.cy * unitVec.y;
-    // let cq = points.cx*q.x + points.cy*q.y;
-    var d = points.dx * unitVec.x + points.dy * unitVec.y;
-    // let dq = points.dx*q.x + points.dy*q.y;
-    // console.log("a,b,c,d",{a,b,c,d});
-    return [a, b, c, d];
-  }
-
-  function getBookCoords(bookObj) {
-    var points = getPoints(bookObj);
-    // console.log(bookObj.title, 'points', points);
-
-    var _getUnitVectors = getUnitVectors(bookObj),
-        p = _getUnitVectors.p,
-        q = _getUnitVectors.q;
-
-    return { points: points, p: p, q: q };
-  }
-
-  function getUnitVectors(bookObj) {
-    var angle = inRadians(bookObj.angle),
-        p = {},
-        q = {};
-
-    p.x = bookObj.width * Math.sin(angle + Math.PI / 2) / bookObj.width;
-    p.y = bookObj.width * Math.cos(angle + Math.PI / 2) / bookObj.width;
-    q.x = bookObj.depth * Math.sin(angle) / bookObj.depth;
-    q.y = bookObj.depth * Math.cos(angle) / bookObj.depth;
-    // console.log(bookObj.title,p,q);
-    return { p: p, q: q };
-  }
-
-  function getPoints(bookObj) {
-    var ax = 'noped',
-        ay = 'noped',
-        bx = 'noped',
-        by = 'noped',
-        cx = 'noped',
-        cy = 'noped',
-        dx = 'noped',
-        dy = 'noped';
-    var phi = bookObj.phi,
-        x = bookObj.x,
-        width = bookObj.width,
-        depth = bookObj.depth,
-        diagonal = bookObj.diagonal,
-        angle = bookObj.angle;
-
-
-    angle = inRadians(angle);
-
-    if (angle >= 0) {
-      bx = x + width;
-      by = 0;
-      ax = bx - width * Math.cos(angle);
-      ay = width * Math.sin(angle);
-      cx = bx + depth * Math.sin(angle);
-      cy = depth * Math.cos(angle);
-      dx = bx + diagonal * Math.sin(angle - phi);
-      dy = Math.abs(diagonal * Math.cos(phi + angle));
-    } else {
-      ax = x;
-      ay = 0;
-      bx = x + width * Math.cos(angle);
-      by = -width * Math.sin(angle);
-      cx = x + diagonal * Math.sin(angle + phi);
-      cy = diagonal * Math.cos(angle + phi);
-      dx = -(x - depth * Math.sin(angle));
-      dy = depth * Math.cos(angle);
-    }
-
-    return { ax: ax, ay: ay, bx: bx, by: by, cx: cx, cy: cy, dx: dx, dy: dy };
-  }
-
-  function inRadians(theta) {
-    return theta * ToRad;
-  }
-
-  // function updateAngles(bookObj, movementX){
-  //   let width = bookObj.width;
-  //   let budgeUp = 0;
-  //   let newAngle, newXPos;
+  //   function pushBooks(bookObj, movementX){
+  //     let book1 = bookObj;
+  //     let book2 = null;
+  //     let book1Points = getBookCoords(bookObj);
+  //     let axies, gap = false;
+  //     let book2Points = null;
+  //     let deltaX = 0;
   //
-  //   function budge(i,next){
-  //     budgeUp = (width/Math.cos(books[next].angle*ToRad)-width) + budgeUp;
-  //     budgeUp = budgeUp > books[i].transforms.tX ? budgeUp : books[i].transforms.tX;
-  //   }
+  //     if(bookObj.angle > 0 && movementX > 0){
+  //       for( let i = bookObj.i+1; i < books.length ; i++){
+  //         book2 = books[i];
+  //         book2Points = getBookCoords(book2);
+  //         axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
+  //         gap = minMaxOverlap(axies, book1Points, book2Points);
   //
-  //   if(movementX > 0){
-  //     for(let i = 0 ; i < books.length; i++){
-  //       newAngle = 0;
-  //       newXPos = 0;
-  //       if(books[i].x > bookObj.x){
-  //         budge(i,i-1);
-  //         newXPos = books[i-1]  ? budgeUp : books[i].transforms.tX;
-  //         newAngle = books[i].angle < books[i-1].angle ? books[i-1].angle : books[i].angle;
-  //         books[i].updateTransformation({tX: newXPos, rY: newAngle});
-  //       }
-  //     }
-  //   } else {
-  //     // movement < 0
-  //     for(let i = books.length-1 ; i >= 0; i--){
-  //       if(books[i].x < bookObj.x){
-  //         if(books[i+1] ){
-  //           budge(i,i+1);
-  //           books[i].updateTransformation({tX: -budgeUp});
+  //         if(gap){
+  //           console.log("!!!!!GAP between", book1.title, "and", book2.title);
+  //           console.log((`\n ${i}`));
+  //           break;
+  //         } else {
+  //           console.log("overlapping", book1.title, "and", book2.title);
+  //           book2.angle = book1.angle;
+  //           book2.updateTransformation({rY: book2.angle});
+  //           if(book1.title === bookObj.title){
+  //             deltaX = book1.transforms.tX;
+  //           }
+  //           deltaX = book2.width/(Math.cos(ToRad*(book2.angle)))-book2.width*Math.cos(ToRad*book2.angle) + deltaX + 2;
+  //
+  //           book2.updateTransformation({tX: deltaX});
+  //           // console.log('book1Points',book1Points);
+  //           // console.log('book2Points',book2Points);
+  //
+  //           // update book 2 transfornation based on
+  //           // book2.angle = book1.angle;
+  //
+  //           }
+  //           gap = false;
+  //           book1 = book2;
+  //           book1Points = book2Points;
   //         }
-  //         if(books[i].angle > books[i+1].angle){
-  //           books[i].updateTransformation({rY: books[i+1].angle});
-  //         }
-  //       }
+  //
   //     }
+  //     if(bookObj.angle < 0 && movementX < 0){
+  //       for( let i = bookObj.i-1; i >= 0 ; i--){
+  //         console.log("try???");
+  //         book2 = books[i];
+  //         book2Points = getBookCoords(book2);
+  //         axies = [book1Points.p, book1Points.q, book2Points.p, book2Points.q];
+  //         gap = minMaxOverlap(axies, book1Points, book2Points);
+  //
+  //         if(gap){
+  //           console.log("GAP between", book1.title, "and", book2.title);
+  //           break;
+  //         } else {
+  //           console.log("overlapping", book1.title, "and", book2.title);
+  //           book2.angle = book1.angle;
+  //           book2.updateTransformation({rY: book2.angle});
+  //           if(book1.title === bookObj.title){
+  //             deltaX = book1.transforms.tX;
+  //           }
+  //           deltaX = book2.width/(Math.cos(ToRad*(book2.angle)))-book2.width*Math.cos(ToRad*book2.angle) + deltaX + 2;
+  //
+  //           book2.updateTransformation({tX: -deltaX});
+  //           // console.log('book1Points',book1Points);
+  //           // console.log('book2Points',book2Points);
+  //
+  //           // update book 2 transfornation based on
+  //           // book2.angle = book1.angle;
+  //
+  //           }
+  //           gap = false;
+  //           book1 = book2;
+  //           book1Points = book2Points;
+  //       }
+  //
   //   }
   // }
 });
@@ -403,20 +286,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Book = function () {
-  function Book(bookObj) {
+  function Book(bookObj, position) {
     _classCallCheck(this, Book);
 
     this.book = bookObj;
     this.title = this.shortcode();
-    this.clicked = false;
+    this.position = position;
+    // this.clicked = false;
     this.angle = 0;
     this.transforms = { rX: 0, rY: 0, rZ: 0, tX: 0, tY: 0, tZ: 0 };
 
     this.width = 40 * this.book.width;
     this.height = 40 * this.book.height;
     this.depth = 40 * this.book.depth;
-    this.diagonal = Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.depth, 2));
-    this.phi = Math.asin(this.width / this.diagonal); //is in radians
+    // this.diagonal = Math.sqrt(Math.pow(this.width,2)+Math.pow(this.depth,2));
+    // this.phi=Math.asin(this.width/this.diagonal);//is in radians
 
     this.html = this.createHtmlObject();
   }

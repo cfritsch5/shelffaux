@@ -1,18 +1,19 @@
 import Vector from './vector';
 
 class Book {
-  constructor(bookObj){
+  constructor(bookObj, position){
     this.book = bookObj;
     this.title = this.shortcode();
-    this.clicked = false;
+    this.position = position;
+    // this.clicked = false;
     this.angle = 0;
     this.transforms = {rX: 0, rY: 0, rZ: 0, tX: 0, tY: 0, tZ: 0};
 
     this.width = 40*this.book.width;
     this.height = 40*this.book.height;
     this.depth = 40*this.book.depth;
-    this.diagonal = Math.sqrt(Math.pow(this.width,2)+Math.pow(this.depth,2));
-    this.phi=Math.asin(this.width/this.diagonal);//is in radians
+    // this.diagonal = Math.sqrt(Math.pow(this.width,2)+Math.pow(this.depth,2));
+    // this.phi=Math.asin(this.width/this.diagonal);//is in radians
 
     this.html = this.createHtmlObject();
   }

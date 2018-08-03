@@ -46,6 +46,7 @@ t   |___|/ d
   align-items: center;
   transform-style: preserve-3d;
   /* position: absolute; */
+  transition: transform 0.5s ease;
 }
 
 .container {
